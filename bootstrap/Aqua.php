@@ -1,8 +1,8 @@
 <?php
 /**
- * @namespace: AquaInterface
- * @class: Config
- * @version: 0.1
+ * @namespace Aqua
+ * @class Config
+ * @version 0.1
  * This file is used to gather all the necessary stuff in a class
  */
 namespace Aqua;
