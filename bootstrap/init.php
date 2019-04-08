@@ -4,7 +4,8 @@
  * Editing this file is not suggested as it may cause instability issues or even break your app down
 */
 
-define('__ROOT__', __DIR__ . '/..'); // Access Aqua root folder with this constant
+define('__ROOT__', str_replace('\\', '/',  realpath(__DIR__ . '/..'))); // Access Aqua root folder with this constant
 
-require_once 'aqua_config.php';
+require_once 'AquaInterface.php';
 
+echo \AquaInterface\Core::Config()->database->address;

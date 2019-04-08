@@ -13,4 +13,4 @@
  * Start by editing `index.pearl.php` in the `presentation` folder
  */
 
-require_once '../bootstrap/init.php';
+require_once '../bootstrap/Init.php';
