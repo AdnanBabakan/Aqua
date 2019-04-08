@@ -6,4 +6,4 @@
 
 define('__ROOT__', str_replace('\\', '/',  realpath(__DIR__ . '/..'))); // Access Aqua root folder with this constant
 
-require_once 'AquaInterface.php';
+require_once 'Aqua.php';
