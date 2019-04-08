@@ -1,0 +1,14 @@
+{
+    "name": "adnanbabakan/aqua",
+    "description": "A robust PHP framework for PHP professionals",
+    "type": "project",
+    "license": "GNU",
+    "authors": [
+        {
+            "name": "AdnanBabakan",
+            "email": "adnanbabakan.personal@hotmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
