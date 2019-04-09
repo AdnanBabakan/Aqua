@@ -5,6 +5,7 @@
  * @version 0.1
  * This file is used to gather all the necessary stuff in a class
  */
+
 namespace Aqua;
 
 include 'traits/Config.php';
