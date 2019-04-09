@@ -7,9 +7,11 @@
  */
 namespace Aqua;
 
-include __ROOT__ . '/core/traits/config.php';
+include 'traits/Config.php';
+include 'traits/Debug.php';
 
 class Core
 {
-    use \AquaTrait\Config;
+    use \Aqua\Traits\Config;
+    use \Aqua\Traits\Debug;
 }
