@@ -14,6 +14,10 @@ require_once __ROOT__ . '/core/Misc.php';
 
 require_once __ROOT__ . '/classes/router/Router.php';
 
+foreach(\Aqua\Misc::rsearch(__ROOT__ . '/controllers', '/(.*?)\.php/') as $controllerFile) {
+    require_once $controllerFile;
+}
+
 require_once __ROOT__ . '/routes/Web.php';
 
 // Initiate Router

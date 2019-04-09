@@ -21,7 +21,7 @@ class Router
 
     protected static $current_route;
 
-    public static function route($r, $f) : void
+    public static function route(string $r, $f) : void
     {
         array_push(self::$routes, [
             "route" => $r,
@@ -75,7 +75,16 @@ class Router
         foreach(self::$routes as $route) {
             if(preg_match('/^' . str_replace('/', '\/', self::regex_shortcuts($route['route'])) . '(\/)$/', __PATH__)) {
                 self::$current_route = $route;
-                echo self::$current_route['function'](...self::extract_url_params());
+                $params = self::extract_url_params();
+                if(gettype($route['function'])=='object') {
+                    echo self::$current_route['function'](...$params);
+                } elseif(gettype($route['function'])=='string') {
+                    $f = explode('@', $route['function']);
+                    require_once __ROOT__ . '/controllers/' . $f[1] . '.php';
+                    $class = '\\' . $f[1] . '\\' . $f[1];
+                    $instance = new $class;
+                    echo $instance->{$f[0]}(...$params);
+                }
             }
         }
     }
