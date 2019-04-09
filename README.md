@@ -1,2 +1,2 @@
 # Aqua
-A Robust PHP Framework For PHP Professionals
+An Efficient PHP Framework For PHP Lovers
