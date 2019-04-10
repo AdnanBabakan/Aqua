@@ -2,10 +2,21 @@
 
 namespace HomeController;
 
-class HomeController
+class HomeController extends \Aqua\Controller
 {
-    public function Index($n, $y)
+
+    public function __construct()
     {
-        return 'Movie: ' . $n . ' Year: ' . $y;
+        $this->content_type('text/plain');
+    }
+
+    public function Index()
+    {
+        return 'Hello Aqua!';
+    }
+
+    public function User()
+    {
+        return 'Users Page!';
     }
 }

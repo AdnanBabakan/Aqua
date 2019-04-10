@@ -8,9 +8,11 @@ define('__ROOT__', str_replace('\\', '/',  realpath(__DIR__ . '/..'))); // Acces
 define('__PATH__', '/' . (isset($_GET['path'])?$_GET['path'] . (substr($_GET['path'], -1)=='/'?'':'/'):''));
 
 
-require_once __ROOT__ . '/core/Core.php';
+require_once __ROOT__ . '/classes/core/Core.php';
 
-require_once __ROOT__ . '/core/Misc.php';
+require_once __ROOT__ . '/classes/core/Misc.php';
+
+require_once __ROOT__ . '/classes/controller/Controller.php';
 
 require_once __ROOT__ . '/classes/router/Router.php';
 

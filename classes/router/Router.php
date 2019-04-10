@@ -73,7 +73,7 @@ class Router
     public static function run() : void
     {
         foreach(self::$routes as $route) {
-            if(preg_match('/^' . str_replace('/', '\/', self::regex_shortcuts($route['route'])) . '(\/)$/', __PATH__)) {
+            if(preg_match('/^' . str_replace('/', '\/', self::regex_shortcuts($route['route'])) . '(\/)$/', (__PATH__=='/'?'//':__PATH__))) {
                 self::$current_route = $route;
                 $params = self::extract_url_params();
                 if(gettype($route['function'])=='object') {
@@ -83,7 +83,17 @@ class Router
                     require_once __ROOT__ . '/controllers/' . $f[1] . '.php';
                     $class = '\\' . $f[1] . '\\' . $f[1];
                     $instance = new $class;
-                    echo $instance->{$f[0]}(...$params);
+                    $return_value = $instance->{$f[0]}(...$params);
+                    switch(gettype($return_value)) {
+                        case 'array':
+                        case 'object':
+                            header('Content-Type: application/json;');
+                            echo json_encode($return_value);
+                        break;
+                        default:
+                            header('Content-Type: ' . $instance->content_type . ';');
+                            echo $return_value;
+                    }
                 }
             }
         }
