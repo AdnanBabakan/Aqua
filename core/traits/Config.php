@@ -10,7 +10,10 @@ namespace AquaTrait;
 
 trait Config
 {
-    public static function Config() : string
+
+    public static $config;
+
+    public static function Config() : object
     {
         return json_decode(json_encode(parse_ini_file(__ROOT__ . '/AquaConfig.ini', true)));
     }

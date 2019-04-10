@@ -15,11 +15,9 @@ require_once __ROOT__ . '/core/Misc.php';
 // Initiate Router
 $router = new \Aqua\Router();
 
-// Load Controllers
+// Load Routers
 
-foreach(\Aqua\Misc::rsearch(__ROOT__ . '/controller', '/(.*?)\.php/') as $controllerFile) {
-    require_once $controllerFile;
-}
+require_once __ROOT__ . '/router/Web.php';
 
 // Run Router
 $router->run();
