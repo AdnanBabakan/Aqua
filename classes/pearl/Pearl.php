@@ -3,7 +3,6 @@
  * @namespace: Aqua
  * @version 0.1
  * This file is the main class that will help you work with Pearl tampleates
- * @Source https://github.com/bramus/router
  */
 
 namespace Aqua;
