@@ -10,7 +10,8 @@ namespace Aqua;
 
 class Misc
 {
-    public static function rsearch($folder, $pattern) {
+    public static function rsearch($folder, $pattern) : array
+    {
         $dir = new \RecursiveDirectoryIterator($folder);
         $ite = new \RecursiveIteratorIterator($dir);
         $files = new \RegexIterator($ite, $pattern, \RegexIterator::GET_MATCH);

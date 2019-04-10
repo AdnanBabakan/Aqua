@@ -1,5 +1,6 @@
 <?php
+use \Aqua\Router as Router;
 
-$router->get('/{name}', function($name) {
-    echo 'Welcome to Aqua! ' . $name;
+Router::route('/', function() {
+
 });
