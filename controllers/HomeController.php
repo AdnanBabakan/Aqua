@@ -2,21 +2,12 @@
 
 namespace HomeController;
 
+use \Aqua\Pearl as Pearl;
+
 class HomeController extends \Aqua\Controller
 {
-
-    public function __construct()
-    {
-        $this->content_type('text/plain');
-    }
-
     public function Index()
     {
-        return 'Hello Aqua!';
-    }
-
-    public function User()
-    {
-        return 'Users Page!';
+        return Pearl::render('index', ["title" => "Aqua", "message" => "Welcome to Aqua framework!"]);
     }
 }

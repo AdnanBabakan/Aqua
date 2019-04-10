@@ -10,7 +10,7 @@
 /**
  * This is the main access point of your website
  * Make no changes to the files in this folder nor upload anything new
- * Start by editing `index.pearl.php` in the `presentation` folder
+ * Start by editing `index.pearl.php` in the `views` folder
  */
 
 require_once '../bootstrap/Init.php';
