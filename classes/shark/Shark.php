@@ -39,14 +39,15 @@ class Shark
 
     public function table(string $t)
     {
+        Core::var_dump($this->queries);
 
         foreach($this->queries as $query) {
             
             $sql = str_replace('{{table}}', $t, $query["query"]);
-            $sql = str_replace('{{where}}', 'WHERE' . preg_replace('/^(.*?)(AND|OR)/', '', implode('', $this->where["queries"])), $sql);
+            $sql = str_replace('{{where}}', 'WHERE' . preg_replace('/^(.*?)(AND|OR)/', '', implode('', (isset($this->where["queries"])?$this->where["queries"]:[]))), $sql);
             
             $result = $this->db_conn->prepare($sql);
-            $result->execute(array_merge($query["params"], $this->where['params']));
+            $result->execute(array_merge((isset($query["params"])?$query["params"]:[]), (isset($this->where['params'])?$this->where['params']:[])));
         }
 
         if($this->fetch == 1) {
@@ -59,7 +60,11 @@ class Shark
         $this->fetch = false;
         $this->where = [];
 
-        return $result;
+        if(is_array($result)) {
+            return $result;
+        } else {
+            return $this;
+        }
     }
 
     public function insert(array $p)

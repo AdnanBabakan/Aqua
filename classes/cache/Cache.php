@@ -11,6 +11,7 @@ class Cache
 {
     public $file_name;
     public $file_address;
+    public $cache_folder_name = __ROOT__ . '/cache';
 
     public function __construct(string $n = '', array $a = [])
     {
@@ -20,6 +21,7 @@ class Cache
 
     public function save_cache(string $c = '')
     {
+        file_exists(__ROOT__ . '/cache') or mkdir(__ROOT__ . '/cache');
         file_put_contents($this->file_address, $c);
     }
 
@@ -35,11 +37,10 @@ class Cache
 
     public static function clear_cache()
     {
-        $cache_folder_name = __ROOT__ . '/cache';
-        $cache_folder = scandir($cache_folder_name);
+        $cache_folder = scandir($this->cache_folder_name);
         foreach ($cache_folder as $file) {
             if ($file != '.' and $file != '..') {
-                unlink($cache_folder_name . '/' . $file);
+                unlink($this->cache_folder_name . '/' . $file);
             }
         }
     }
