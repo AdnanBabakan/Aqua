@@ -2,7 +2,7 @@
 /**
  * @namespace: Aqua
  * @version 0.1
- * This file is the main class that handles sql helpers acrros the appliaction
+ * This file is the main class that handles sql helpers across the appliaction
  */
 
 namespace Aqua;
