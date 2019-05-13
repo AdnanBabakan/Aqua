@@ -11,7 +11,7 @@ namespace Aqua\Traits;
 trait Debug
 {
 
-    public static function pre_var_dump($o) : void
+    public static function pre_var_dump($o = []) : void
     {
         echo '<pre>';
         print_r($o);

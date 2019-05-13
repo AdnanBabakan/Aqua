@@ -14,6 +14,8 @@ require_once __ROOT__ . '/classes/core/Misc.php';
 
 require_once __ROOT__ . '/classes/pearl/Pearl.php';
 
+require_once __ROOT__ . '/classes/cache/Cache.php';
+
 require_once __ROOT__ . '/classes/controller/Controller.php';
 
 require_once __ROOT__ . '/classes/router/Router.php';
