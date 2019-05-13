@@ -68,6 +68,34 @@ class Shark
         return $this;
     }
 
+    public function where(...$s)
+    {
+     
+        $clause = [];
+        if(!is_array($s[0])) {
+            
+            $clause = [$s];
+
+        } else {
+            
+            if(isset($s[0][0]) and is_array($s[0][0])) {
+                $clause = $s[0];
+            } else {
+                $clause = $s;
+            }
+
+        }
+
+        foreach ($clause as $key => $value) {
+            if(count($value) == 2) {
+                $clause[$key][2] = $clause[$key][1];
+                $clause[$key][1] = '=';
+            }
+        }
+
+        Core::var_dump($clause);die;
+    }
+
     protected $fetch = 0;
 
     public function select(...$s)
