@@ -106,7 +106,7 @@ trait Debug
         $out = "\n<!-- Dumpr Begin -->\n".
             "<style type=\"text/css\">".$style."</style>\n".
             "<div class=\"dumpr\">
-            <div><pre>$line1 $callingFile : $callingFileLine \n$c\n</pre></div></div><div style=\"clear:both;\">&nbsp;</div>".
+            <div><pre>$callingFile : $callingFileLine \n$c\n</pre></div></div><div style=\"clear:both;\">&nbsp;</div>".
             "\n<!-- Dumpr End -->\n";
         if($return) {
             return $out;
