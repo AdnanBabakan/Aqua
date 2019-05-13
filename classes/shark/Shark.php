@@ -29,14 +29,6 @@ class Shark
         return $this->db_conn->prepare($q);
     }
 
-    public function table(string $t)
-    {
-        
-        $this->execute_queries($t);
-
-        return $this;
-    }
-
     protected function add_query($q, array $p = [])
     {
         $this->queries[] = [
@@ -45,13 +37,24 @@ class Shark
         ];
     }
 
-    protected function execute_queries(string $t)
+    public function table(string $t)
     {
         foreach($this->queries as $query) {
-            $this->db_conn->prepare(str_replace('{{table}}', $t, $query["query"]))->execute($query["params"]);
+            $result = $this->db_conn->prepare(str_replace('{{table}}', $t, $query["query"]));
+            $result->execute($query["params"]);
         }
 
-        return $this;
+        if($this->fetch == 1) {
+            $result = $result->fetchAll(2);
+        } elseif($this->fetch == 2) {
+            $result = $result->fetch(2);
+            
+        }
+
+        $this->queries = [];
+        $this->fetch = false;
+
+        return $result;
     }
 
     public function insert(array $p)
@@ -65,8 +68,27 @@ class Shark
         return $this;
     }
 
-    public function select()
-    {
+    protected $fetch = 0;
 
+    public function select(...$s)
+    {
+        $this->fetch = 1;
+        
+        if(isset($s[0]) and is_array($s[0])) {
+            $s = $s[0];
+        }
+        $s or $s = ['*'];
+
+        $this->add_query('SELECT ' . implode(', ', $s) . ' FROM {{table}}');
+        
+        return $this;
+    }
+
+    public function first(...$s)
+    {
+        $this->select(...$s);
+        $this->fetch = 2;
+
+        return $this;
     }
 }

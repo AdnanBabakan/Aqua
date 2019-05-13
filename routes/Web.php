@@ -11,9 +11,11 @@ Router::route('/test', function() {
     
     GLOBAL $shark;
 
-    $username = "yasaie";
+    $username = "Hasan";
     $password = "762174";
 
-    $shark->insert(compact("username", "password"))->insert(["username"=>"adnan"])->table('users');
+    $q = $shark->first("id", "password")->table('users');
+
+    Core::var_dump($q);
 
 });
