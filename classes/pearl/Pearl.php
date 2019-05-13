@@ -14,7 +14,7 @@ class Pearl
 
         $cache = new Cache($t, $p);
         
-        if($cache->cache_exists()) {
+        if($cache->cache_exists() && Core::config()->general->cache) {
             
             $file = $cache->get_cache();
 
@@ -33,7 +33,9 @@ class Pearl
                 }
             }
 
-            $cache->save_cache($file);
+            if(Core::config()->general->cache) {
+                $cache->save_cache($file);
+            }
 
         }
 
