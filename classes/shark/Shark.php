@@ -10,6 +10,7 @@ namespace Aqua;
 class Shark
 {
     protected $db_conn;
+    protected $queries = [];
 
     public function __construct()
     {
@@ -28,21 +29,44 @@ class Shark
         return $this->db_conn->prepare($q);
     }
 
-    public function query($q, array $p = [])
+    public function table(string $t)
     {
-        $this->prepare($q)->execute($p);
+        
+        $this->execute_queries($t);
 
         return $this;
     }
 
-    public function insert(string $t, array $p)
+    protected function add_query($q, array $p = [])
     {
-        $sql = "INSERT INTO $t (" . implode(', ', array_keys($p)) . ") VALUES (" . implode(', ', array_map(function($d) {
+        $this->queries[] = [
+            "query" => $q,
+            "params" => $p
+        ];
+    }
+
+    protected function execute_queries(string $t)
+    {
+        foreach($this->queries as $query) {
+            $this->db_conn->prepare(str_replace('{{table}}', $t, $query["query"]))->execute($query["params"]);
+        }
+
+        return $this;
+    }
+
+    public function insert(array $p)
+    {
+        $sql = "INSERT INTO {{table}} (" . implode(', ', array_keys($p)) . ") VALUES (" . implode(', ', array_map(function($d) {
             return ":$d";
         }, array_keys($p))) . ")";
         
-        $this->query($sql, $p);
+        $this->add_query($sql, $p);
 
         return $this;
+    }
+
+    public function select()
+    {
+
     }
 }

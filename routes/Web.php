@@ -14,6 +14,6 @@ Router::route('/test', function() {
     $username = "yasaie";
     $password = "762174";
 
-    $shark->insert('users', compact("username", "password"))->insert('users', ["username"=>"adnan", "password"=>"1111"]);
+    $shark->insert(compact("username", "password"))->insert(["username"=>"adnan"])->table('users');
 
 });
