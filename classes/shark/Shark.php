@@ -2,7 +2,7 @@
 /**
  * @namespace: Aqua
  * @version 0.1
- * This file is the main class that handles routes acrros the appliaction
+ * This file is the main class that handles sql helpers acrros the appliaction
  */
 
 namespace Aqua;
