@@ -39,20 +39,25 @@ class Shark
 
     public function table(string $t)
     {
+
         foreach($this->queries as $query) {
-            $result = $this->db_conn->prepare(str_replace('{{table}}', $t, $query["query"]));
-            $result->execute($query["params"]);
+            
+            $sql = str_replace('{{table}}', $t, $query["query"]);
+            $sql = str_replace('{{where}}', 'WHERE' . preg_replace('/^(.*?)(AND|OR)/', '', implode('', $this->where["queries"])), $sql);
+            
+            $result = $this->db_conn->prepare($sql);
+            $result->execute(array_merge($query["params"], $this->where['params']));
         }
 
         if($this->fetch == 1) {
             $result = $result->fetchAll(2);
         } elseif($this->fetch == 2) {
-            $result = $result->fetch(2);
-            
+            $result = $result->fetch(2); 
         }
 
         $this->queries = [];
         $this->fetch = false;
+        $this->where = [];
 
         return $result;
     }
@@ -68,10 +73,16 @@ class Shark
         return $this;
     }
 
-    public function where(...$s)
+    public $where = [
+        "queries" => [],
+        "params" => []
+    ];
+
+    protected function where_do($o, $s)
     {
-     
         $clause = [];
+        $clause_string = [];
+
         if(!is_array($s[0])) {
             
             $clause = [$s];
@@ -91,9 +102,36 @@ class Shark
                 $clause[$key][2] = $clause[$key][1];
                 $clause[$key][1] = '=';
             }
+
+            $param_name = $clause[$key][0] . '_' . Misc::generate_random_string(3);
+            $clause_string['queries'][] = " $o {$clause[$key][0]} {$clause[$key][1]} :{$param_name}";
+            $clause_string['params'][$param_name] = $clause[$key][2];
+
         }
 
-        Core::var_dump($clause);die;
+        $this->where["queries"] = array_merge($this->where["queries"], $clause_string["queries"]);
+        $this->where["params"] = array_merge($this->where["params"], $clause_string["params"]);
+    }
+
+    public function where(...$s)
+    {
+        $this->where_do('AND', $s);
+
+        return $this;
+    }
+
+    public function and_where(...$s)
+    {
+        $this->where_do('AND', $s);
+
+        return $this;
+    }
+
+    public function or_where(...$s) 
+    {
+        $this->where_do('OR', $s);
+
+        return $this;
     }
 
     protected $fetch = 0;
@@ -107,7 +145,7 @@ class Shark
         }
         $s or $s = ['*'];
 
-        $this->add_query('SELECT ' . implode(', ', $s) . ' FROM {{table}}');
+        $this->add_query('SELECT ' . implode(', ', $s) . ' FROM {{table}} {{where}}');
         
         return $this;
     }
