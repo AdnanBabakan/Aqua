@@ -2,6 +2,7 @@
 /**
  * @namespace: Aqua
  * @version 0.1
+ * @author Payam Yasaie
  * This file is the main class that will help your application speed up using cache
  */
 
