@@ -21,6 +21,8 @@ require_once __ROOT__ . '/bootstrap/Global.php';
 
 require_once __ROOT__ . '/bootstrap/AutoLoader.php';
 
+require_once __ROOT__ . '/config/Config.php';
+
 require_once __ROOT__ . '/classes/controller/Controller.php';
 
 require_once __ROOT__ . '/classes/router/Router.php';

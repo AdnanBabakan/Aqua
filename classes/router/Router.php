@@ -7,16 +7,13 @@
 
 namespace Aqua;
 
-use \Aqua\Core as Core;
-
 class Router
 {
 
     protected static $routes = [];
 
     protected static $regex_shortcuts = [
-        "{(.*?)}" => "(.*?)+",
-        "{(.*?):d}" => "(\d)+"
+        "{(.*?)}" => "(.*?)+"
     ];
 
     protected static $current_route;
