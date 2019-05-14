@@ -11,9 +11,6 @@ require_once __ROOT__ . '/classes/core/Core.php';
 
 require_once __ROOT__ . '/classes/shark/Shark.php';
 
-// Shark init
-$shark = new \Aqua\Shark();
-
 require_once __ROOT__ . '/classes/core/Misc.php';
 
 require_once __ROOT__ . '/classes/pearl/Pearl.php';

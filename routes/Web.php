@@ -1,12 +1,10 @@
 <?php
 use \Aqua\Router as Router;
 use \Aqua\Core as Core;
+use \Aqua\Shark as Shark;
 
 Router::route('/', 'Index@HomeController');
 
 Router::route('/db', function() {
-
-    GLOBAL $shark;
-
-    $shark->insert(["username" => "Hello there"])->table('users')->insert(["title" => "Hello there dude!"])->table('posts');
+    Core::var_dump(\Aqua\Shark()->select()->table('users'));
 });
