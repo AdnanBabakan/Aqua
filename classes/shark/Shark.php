@@ -7,9 +7,13 @@
 
 namespace Aqua;
 
+require_once 'SharkChain.php';
+
 class Shark
 {
     protected $db_conn;
+    protected static $db_conn_static;
+    
     protected $queries = [];
 
     public static function db()
@@ -24,6 +28,8 @@ class Shark
         try {
             $this->db_conn = new \PDO("mysql:host={$db->address}:{$db->port};dbname={$db->name}", $db->username, $db->password);
             $this->db_conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+
+            self::$db_conn_static = $this->db_conn;
         } catch(\PDOException $e) {
             die('Database connection error!');
         }
@@ -36,6 +42,9 @@ class Shark
 
     protected function add_query($q, array $p = [])
     {
+
+        $q = preg_replace('/^(\s)+/', '', $q);
+
         $this->queries[] = [
             "query" => $q,
             "params" => $p
@@ -52,7 +61,6 @@ class Shark
             $result->execute(array_merge((isset($query["params"])?$query["params"]:[]), (isset($this->where['params'])?$this->where['params']:[])));
         }
 
-
         if($this->fetch == 1) {
             $result = $result->fetchAll(2);
         } elseif($this->fetch == 2) {
@@ -66,15 +74,33 @@ class Shark
         if(is_array($result)) {
             return $result;
         } else {
-            return $this;
+            return new class {
+                public function __call($name, $arguments)
+                {
+                    return SharkChain::$name();
+                }
+            };
         }
+    }
+
+    public function query($q)
+    {
+        $this->add_query($q);
+
+        $statement = array_values(array_filter(preg_split('/(\s)+/', $q)))[0];
+        
+        if($statement=='SELECT') {
+            $this->fetch = 1;
+        }
+
+        return $this;
     }
 
     public function insert(array $p)
     {
-        $sql = "INSERT INTO {{table}} (" . implode(', ', array_keys($p)) . ") VALUES (" . implode(', ', array_map(function($d) {
+        $sql = 'INSERT INTO {{table}} (' . implode(', ', array_keys($p)) . ') VALUES (' . implode(', ', array_map(function($d) {
             return ":$d";
-        }, array_keys($p))) . ")";
+        }, array_keys($p))) . ')';
         
         $this->add_query($sql, $p);
 
@@ -160,7 +186,10 @@ class Shark
 
     public function first(...$s)
     {
-        $this->select(...$s);
+        if(count($s)>0) {
+            $this->select(...$s);
+        }
+
         $this->fetch = 2;
 
         return $this;
