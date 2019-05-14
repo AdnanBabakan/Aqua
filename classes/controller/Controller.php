@@ -13,7 +13,7 @@ class Controller
     
     public $content_type = 'text/html';
 
-    public function content_type($type)
+    public function content_type($type) : void
     {
         $this->content_type = $type;
     }

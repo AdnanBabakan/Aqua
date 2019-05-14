@@ -15,26 +15,27 @@ class Router
     protected static $routes = [];
 
     protected static $regex_shortcuts = [
-        "{(.*?)}" => "(.*?)+"
+        "{(.*?)}" => "(.*?)+",
+        "{(.*?):d}" => "(\d)+"
     ];
 
     protected static $current_route;
 
-    public static function route(string $r, $f) : void
+    public static function route(string $route, $function) : void
     {
         array_push(self::$routes, [
-            "route" => $r,
-            "function" => $f
+            "route" => $route,
+            "function" => $function
         ]);
     }
 
-    protected static function regex_shortcuts($s) : string
+    protected static function regex_shortcuts($string) : string
     {
         foreach(self::$regex_shortcuts as $k => $v) {
-            $s = preg_replace('/' . $k . '/', $v, $s);
+            $string = preg_replace('/' . $k . '/', $v, $string);
         }
 
-        return $s;
+        return $string;
     }
 
     protected static function extract_url_params() : array

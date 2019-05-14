@@ -8,7 +8,10 @@ Router::route('/', 'Index@HomeController');
 
 Router::route('/db', function() {
 
-    $q = Shark()->inserted_id();
+    $q = Shark()->insert([
+        'username' => 'Arian',
+        'password' => 'AAAA'
+    ])->table('users');
 
     Core::var_dump($q);
 

@@ -4,12 +4,12 @@ namespace HomeController;
 
 use \Aqua\Controller;
 use \Aqua\Core;
+use Aqua\Pearl;
 
 class HomeController extends Controller
 {
     public function Index()
     {
-        $h = new \Aqua\Model\Users();
-        debug($h->add_user('alo', 'alozadeh'));
+        return Pearl::render('index', ["title"=>"Aqua", "message"=>"Welcome to Aqua!"]);
     }
 }

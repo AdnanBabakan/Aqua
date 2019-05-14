@@ -9,10 +9,10 @@ namespace Aqua;
 
 class Pearl
 {
-    public static function render(string $t, array $p = [])
+    public static function render(string $template, array $parameters = []) : string
     {
 
-        $cache = new Cache($t, $p);
+        $cache = new Cache($template, $parameters);
         
         if($cache->cache_exists() && Core::config()->general->cache) {
             
@@ -20,18 +20,18 @@ class Pearl
 
         } else {
             
-            extract($p);
+            extract($parameters);
 
             ob_start();
-            require(__ROOT__ . '/views/' . $t . '.php');
+            require(__ROOT__ . '/views/' . $template . '.php');
             $file = ob_get_contents();
             ob_end_clean();
 
             if(preg_match_all('/\[\[(.*?)\]\]/', $file, $match)) {
                 $match_number = count($match);
                 for($i=0; $i<$match_number; $i++) {
-                    if(isset($match[1][$i]) && array_key_exists($match[1][$i], $p)) {
-                        $file = str_replace($match[0][$i], $p[$match[1][$i]], $file);   
+                    if(isset($match[1][$i]) && array_key_exists($match[1][$i], $parameters)) {
+                        $file = str_replace($match[0][$i], $parameters[$match[1][$i]], $file);   
                     }
                 }
             }

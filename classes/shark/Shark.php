@@ -16,7 +16,7 @@ class Shark
 
     protected $queries = [];
 
-    public static function db()
+    public static function db() : self
     {
         return new self();
     }
@@ -35,34 +35,33 @@ class Shark
         }
     }
 
-    protected function prepare($q)
+    protected function prepare($query) : object
     {
-        return $this->db_conn->prepare($q);
+        return $this->db_conn->prepare($query);
     }
 
-    protected function add_query($q, array $p = [])
+    protected function add_query($query, array $parameters = []) : void
     {
-
-        $q = preg_replace('/^(\s)+/', '', $q);
+        $q = preg_replace('/^(\s)+/', '', $query);
 
         $this->queries[] = [
-            "query" => $q,
-            "params" => $p
+            "query" => $query,
+            "params" => $parameters
         ];
     }
 
-    protected function run()
+    protected function run() : object
     {
         $table_name = explode('\\', get_called_class());
         return $this->table(end($table_name));
     }
 
-    public function table(string $t)
+    public function table(string $table)
     {
-        foreach($this->queries as $query) { 
-            $sql = str_replace('{{table}}', $t, $query["query"]);
+        foreach($this->queries as $query) {
+            $sql = str_replace('{{table}}', $table, $query["query"]);
             $sql = str_replace('{{where}}', preg_replace('/^(.*?)(AND|OR)/', ' WHERE ', implode('', (isset($this->where["queries"])?$this->where["queries"]:[]))), $sql);
-            
+
             $result = $this->db_conn->prepare($sql);
             $result->execute(array_merge((isset($query["params"])?$query["params"]:[]), (isset($this->where['params'])?$this->where['params']:[])));
         }
@@ -70,7 +69,7 @@ class Shark
         if($this->fetch == 1) {
             $result = $result->fetchAll(2);
         } elseif($this->fetch == 2) {
-            $result = $result->fetch(2); 
+            $result = $result->fetch(2);
         }
 
         $this->queries = [];
@@ -89,12 +88,12 @@ class Shark
         }
     }
 
-    public function query($q)
+    public function query($query) : self
     {
-        $this->add_query($q);
+        $this->add_query($query);
 
-        $statement = array_values(array_filter(preg_split('/(\s)+/', $q)))[0];
-        
+        $statement = array_values(array_filter(preg_split('/(\s)+/', $query)))[0];
+
         if($statement=='SELECT') {
             $this->fetch = 1;
         }
@@ -102,13 +101,13 @@ class Shark
         return $this;
     }
 
-    public function insert(array $p)
+    public function insert(array $parameters) : self
     {
-        $sql = 'INSERT INTO {{table}} (' . implode(', ', array_keys($p)) . ') VALUES (' . implode(', ', array_map(function($d) {
+        $sql = 'INSERT INTO {{table}} (' . implode(', ', array_keys($parameters)) . ') VALUES (' . implode(', ', array_map(function($d) {
             return ":$d";
-        }, array_keys($p))) . ')';
-        
-        $this->add_query($sql, $p);
+        }, array_keys($parameters))) . ')';
+
+        $this->add_query($sql, $parameters);
 
         return $this;
     }
@@ -118,21 +117,21 @@ class Shark
         "params" => []
     ];
 
-    protected function where_do($o, $s)
+    protected function where_do($operator, $parameters) : self
     {
         $clause = [];
         $clause_string = [];
 
-        if(!is_array($s[0])) {
-            
-            $clause = [$s];
+        if(!is_array($parameters[0])) {
+
+            $clause = [$parameters];
 
         } else {
-            
-            if(isset($s[0][0]) and is_array($s[0][0])) {
-                $clause = $s[0];
+
+            if(isset($parameters[0][0]) and is_array($parameters[0][0])) {
+                $clause = $parameters[0];
             } else {
-                $clause = $s;
+                $clause = $parameters;
             }
 
         }
@@ -144,7 +143,7 @@ class Shark
             }
 
             $param_name = $clause[$key][0] . '_' . Misc::generate_random_string(3);
-            $clause_string['queries'][] = " $o {$clause[$key][0]} {$clause[$key][1]} :{$param_name}";
+            $clause_string['queries'][] = " $operator {$clause[$key][0]} {$clause[$key][1]} :{$param_name}";
             $clause_string['params'][$param_name] = $clause[$key][2];
 
         }
@@ -153,53 +152,53 @@ class Shark
         $this->where["params"] = array_merge(isset($this->where["params"])?$this->where["params"]:[], isset($clause_string["params"])?$clause_string["params"]:[]);
     }
 
-    public function where(...$s)
+    public function where(...$parameters) : self
     {
-        $this->where_do('AND', $s);
+        $this->where_do('AND', $parameters);
 
         return $this;
     }
 
-    public function and_where(...$s)
+    public function and_where(...$parameters) : self
     {
-        $this->where_do('AND', $s);
+        $this->where_do('AND', $parameters);
 
         return $this;
     }
 
-    public function or_where(...$s) 
+    public function or_where(...$parameters) : self
     {
-        $this->where_do('OR', $s);
+        $this->where_do('OR', $parameters);
 
         return $this;
     }
 
     protected $fetch = 0;
 
-    public function select(...$s)
+    public function select(...$parameters) : self
     {
         $this->fetch = 1;
-        
-        if(isset($s[0]) and is_array($s[0])) {
-            $s = $s[0];
-        }
-        $s or $s = ['*'];
 
-        $this->add_query('SELECT ' . implode(', ', $s) . ' FROM {{table}} {{where}}');
-        
+        if(isset($parameters[0]) and is_array($parameters[0])) {
+            $parameters = $parameters[0];
+        }
+        $parameters or $parameters = ['*'];
+
+        $this->add_query('SELECT ' . implode(', ', $parameters) . ' FROM {{table}} {{where}}');
+
         return $this;
     }
 
-    public function first(...$s)
-    {   
-        $this->select(...$s);
-    
+    public function first(...$parameters) : self
+    {
+        $this->select(...$parameters);
+
         $this->fetch = 2;
 
         return $this;
     }
 
-    public function fetch()
+    public function fetch() : self
     {
         $this->fetch = 2;
 

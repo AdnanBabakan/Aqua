@@ -10,7 +10,8 @@ namespace Aqua\Traits;
 
 trait Debug
 {
-    public static function var_dump($data, $label='', $return = false) {
+    public static function var_dump($data, $label='', $return = false) : ?string
+    {
         $debug           = debug_backtrace();
         $callingFile     = $debug[0]['file'];
         $callingFileLine = $debug[0]['line'];
@@ -115,10 +116,10 @@ trait Debug
         }    
     }
 
-    public static function plain_var_dump($o = [])
+    public static function plain_var_dump($object = []) : void
     {
         echo '<pre>';
-        print_r($o);
+        print_r($object);
         echo '</pre>';
     }
 }

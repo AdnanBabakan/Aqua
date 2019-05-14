@@ -14,29 +14,29 @@ class Cache
     public $file_address;
     public $cache_folder_name = __ROOT__ . '/cache';
 
-    public function __construct(string $n = '', array $a = [])
+    public function __construct(string $template = '', array $parameters = [])
     {
-        $this->file_name = md5(json_encode($a) . $n);
+        $this->file_name = md5($template . json_encode($parameters));
         $this->file_address = __ROOT__ . '/cache/' . $this->file_name;
     }
 
-    public function save_cache(string $c = '')
+    public function save_cache(string $content = '') : void
     {
         file_exists(__ROOT__ . '/cache') or mkdir(__ROOT__ . '/cache');
-        file_put_contents($this->file_address, $c);
+        file_put_contents($this->file_address, $content);
     }
 
-    public function cache_exists()
+    public function cache_exists() : bool
     {
         return file_exists($this->file_address);
     }
 
-    public function get_cache()
+    public function get_cache() : string
     {
         return file_get_contents($this->file_address);
     }
 
-    public static function clear_cache()
+    public function clear_cache() : void
     {
         $cache_folder = scandir($this->cache_folder_name);
         foreach ($cache_folder as $file) {

@@ -29,7 +29,8 @@ class Misc
         return $fileList;
     }
 
-    public static function generate_random_string($length = 10) {
+    public static function generate_random_string($length = 10) : string
+    {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $charactersLength = strlen($characters);
         $randomString = '';
