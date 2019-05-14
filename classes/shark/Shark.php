@@ -12,6 +12,11 @@ class Shark
     protected $db_conn;
     protected $queries = [];
 
+    public static function db()
+    {
+        return new self();
+    }
+
     public function __construct()
     {
         $db = Core::config()->database;
@@ -61,7 +66,7 @@ class Shark
         if(is_array($result)) {
             return $result;
         } else {
-            return $result;
+            return $this;
         }
     }
 
@@ -160,9 +165,4 @@ class Shark
 
         return $this;
     }
-}
-
-function Shark()
-{
-    return new Shark();
 }
