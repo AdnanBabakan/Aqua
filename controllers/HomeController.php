@@ -2,13 +2,14 @@
 
 namespace HomeController;
 
-use \Aqua\Pearl as Pearl;
-use \Aqua\Cache as Cache;
+use \Aqua\Controller;
+use \Aqua\Core;
 
-class HomeController extends \Aqua\Controller
+class HomeController extends Controller
 {
     public function Index()
     {
-        return Pearl::render('index', ["title" => "Aqua", "message" => "Hello"]);
+        $h = new \Aqua\Model\Users();
+        debug($h->add_user('alo', 'alozadeh'));
     }
 }

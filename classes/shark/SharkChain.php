@@ -9,8 +9,15 @@ namespace Aqua;
 
 class SharkChain extends Shark
 {
-    public function last_insert_id()
+    public function inserted_id()
     {
-        return self::$db_conn_static->lastInsertId();
+        return (int) self::$db_conn_static->lastInsertId();
+    }
+
+    public function get()
+    {
+        $id = (int) self::$db_conn_static->lastInsertId();
+        $self = new self;
+        return $self->first()->where('id', $id)->table('users');
     }
 }

@@ -13,7 +13,7 @@ class Shark
 {
     protected $db_conn;
     protected static $db_conn_static;
-    
+
     protected $queries = [];
 
     public static function db()
@@ -51,6 +51,12 @@ class Shark
         ];
     }
 
+    protected function run()
+    {
+        $table_name = explode('\\', get_called_class());
+        return $this->table(end($table_name));
+    }
+
     public function table(string $t)
     {
         foreach($this->queries as $query) { 
@@ -77,7 +83,7 @@ class Shark
             return new class {
                 public function __call($name, $arguments)
                 {
-                    return SharkChain::$name();
+                    return SharkChain::$name($arguments);
                 }
             };
         }
@@ -143,8 +149,8 @@ class Shark
 
         }
 
-        $this->where["queries"] = array_merge($this->where["queries"], $clause_string["queries"]);
-        $this->where["params"] = array_merge($this->where["params"], $clause_string["params"]);
+        $this->where["queries"] = array_merge(isset($this->where["queries"])?$this->where["queries"]:[], isset($clause_string["queries"])?$clause_string["queries"]:[]);
+        $this->where["params"] = array_merge(isset($this->where["params"])?$this->where["params"]:[], isset($clause_string["params"])?$clause_string["params"]:[]);
     }
 
     public function where(...$s)
@@ -185,11 +191,16 @@ class Shark
     }
 
     public function first(...$s)
-    {
-        if(count($s)>0) {
-            $this->select(...$s);
-        }
+    {   
+        $this->select(...$s);
+    
+        $this->fetch = 2;
 
+        return $this;
+    }
+
+    public function fetch()
+    {
         $this->fetch = 2;
 
         return $this;
