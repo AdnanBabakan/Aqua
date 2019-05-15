@@ -13,6 +13,9 @@ trait Config
 
     public static $config;
 
+    /**
+     * @return object
+     */
     public static function config() : object
     {
         return json_decode(json_encode(parse_ini_file(__ROOT__ . '/AquaConfig.ini', true)));

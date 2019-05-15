@@ -10,7 +10,13 @@ namespace Aqua\Traits;
 
 trait Debug
 {
-    public static function var_dump($data, $label='', $return = false) : ?string
+    /**
+     * @param $data
+     * @param string $label
+     * @param bool $return
+     * @return string|null
+     */
+    public static function var_dump($data, $label='', $return = false)
     {
         $debug           = debug_backtrace();
         $callingFile     = $debug[0]['file'];
@@ -116,6 +122,9 @@ trait Debug
         }    
     }
 
+    /**
+     * @param array $object
+     */
     public static function plain_var_dump($object = []) : void
     {
         echo '<pre>';

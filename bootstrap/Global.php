@@ -2,7 +2,7 @@
 
 function Shark()
 {
-    return new \Aqua\Shark();
+    return new \Aqua\Shark;
 }
 
 function debug(...$a)

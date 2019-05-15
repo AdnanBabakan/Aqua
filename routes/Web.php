@@ -6,13 +6,8 @@ use \Aqua\SharkCallback as SharkCallback;
 
 Router::route('/', 'Index@HomeController');
 
-Router::route('/db', function() {
+Router::route('/set_key', 'SetKey@HomeController');
 
-    $q = Shark()->insert([
-        'username' => 'Arian',
-        'password' => 'AAAA'
-    ])->table('users');
+Router::route('/unset', 'UnsetKey@HomeController');
 
-    Core::var_dump($q);
-
-});
+Router::route('/show', 'Show@HomeController');

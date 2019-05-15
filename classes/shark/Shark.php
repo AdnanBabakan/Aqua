@@ -16,11 +16,17 @@ class Shark
 
     protected $queries = [];
 
+    /**
+     * @return Shark
+     */
     public static function db() : self
     {
         return new self();
     }
 
+    /**
+     * Shark constructor.
+     */
     public function __construct()
     {
         $db = Core::config()->database;
@@ -35,14 +41,22 @@ class Shark
         }
     }
 
+    /**
+     * @param $query
+     * @return object
+     */
     protected function prepare($query) : object
     {
         return $this->db_conn->prepare($query);
     }
 
+    /**
+     * @param $query
+     * @param array $parameters
+     */
     protected function add_query($query, array $parameters = []) : void
     {
-        $q = preg_replace('/^(\s)+/', '', $query);
+        $query = preg_replace('/^(\s)+/', '', $query);
 
         $this->queries[] = [
             "query" => $query,
@@ -50,12 +64,19 @@ class Shark
         ];
     }
 
+    /**
+     * @return object
+     */
     protected function run() : object
     {
         $table_name = explode('\\', get_called_class());
         return $this->table(end($table_name));
     }
 
+    /**
+     * @param string $table
+     * @return array|bool|mixed|\PDOStatement|__anonymous@2484
+     */
     public function table(string $table)
     {
         foreach($this->queries as $query) {
@@ -88,6 +109,10 @@ class Shark
         }
     }
 
+    /**
+     * @param $query
+     * @return Shark
+     */
     public function query($query) : self
     {
         $this->add_query($query);
@@ -101,6 +126,10 @@ class Shark
         return $this;
     }
 
+    /**
+     * @param array $parameters
+     * @return Shark
+     */
     public function insert(array $parameters) : self
     {
         $sql = 'INSERT INTO {{table}} (' . implode(', ', array_keys($parameters)) . ') VALUES (' . implode(', ', array_map(function($d) {
@@ -117,6 +146,10 @@ class Shark
         "params" => []
     ];
 
+    /**
+     * @param $operator
+     * @param $parameters
+     */
     protected function where_do($operator, $parameters) : void
     {
         $clause = [];
@@ -152,6 +185,10 @@ class Shark
         $this->where["params"] = array_merge(isset($this->where["params"])?$this->where["params"]:[], isset($clause_string["params"])?$clause_string["params"]:[]);
     }
 
+    /**
+     * @param mixed ...$parameters
+     * @return Shark
+     */
     public function where(...$parameters) : self
     {
         $this->where_do('AND', $parameters);
@@ -159,6 +196,10 @@ class Shark
         return $this;
     }
 
+    /**
+     * @param mixed ...$parameters
+     * @return Shark
+     */
     public function and_where(...$parameters) : self
     {
         $this->where_do('AND', $parameters);
@@ -166,6 +207,10 @@ class Shark
         return $this;
     }
 
+    /**
+     * @param mixed ...$parameters
+     * @return Shark
+     */
     public function or_where(...$parameters) : self
     {
         $this->where_do('OR', $parameters);
@@ -175,6 +220,10 @@ class Shark
 
     protected $fetch = 0;
 
+    /**
+     * @param mixed ...$parameters
+     * @return Shark
+     */
     public function select(...$parameters) : self
     {
         $this->fetch = 1;
@@ -189,6 +238,10 @@ class Shark
         return $this;
     }
 
+    /**
+     * @param mixed ...$parameters
+     * @return Shark
+     */
     public function first(...$parameters) : self
     {
         $this->select(...$parameters);
@@ -198,6 +251,9 @@ class Shark
         return $this;
     }
 
+    /**
+     * @return Shark
+     */
     public function fetch() : self
     {
         $this->fetch = 2;

@@ -9,6 +9,11 @@ namespace Aqua;
 
 class Misc
 {
+    /**
+     * @param $folder
+     * @param $pattern
+     * @return array
+     */
     public static function rsearch($folder, $pattern) : array
     {
         $dir = new \RecursiveDirectoryIterator($folder);
@@ -29,6 +34,10 @@ class Misc
         return $fileList;
     }
 
+    /**
+     * @param int $length
+     * @return string
+     */
     public static function generate_random_string($length = 10) : string
     {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';

@@ -11,16 +11,26 @@ class Pearl
 {
     protected static $default_parameters = [];
 
+    /**
+     * @param array ...$parameters
+     */
     public static function add_default_parameter(array ...$parameters) : void
     {
         self::$default_parameters = array_merge(self::$default_parameters, ...$parameters);
     }
 
+    /**
+     * @return array
+     */
     public static function get_default_parameters() : array
     {
         return self::$default_parameters;
     }
 
+    /**
+     * @param string|null $string
+     * @return string
+     */
     public static function render_layout(?string $string) : string
     {
         $raw_content = preg_replace('/\[@layout (.*?)\]/', '', $string);
@@ -47,6 +57,12 @@ class Pearl
         return $string;
     }
 
+    /**
+     * @param string $template
+     * @param array $parameters
+     * @param bool $is_string
+     * @return string
+     */
     public static function render(string $template, array $parameters = [], bool $is_string = false) : string
     {
 

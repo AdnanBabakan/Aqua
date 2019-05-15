@@ -9,11 +9,17 @@ namespace Aqua;
 
 class SharkChain extends Shark
 {
+    /**
+     * @return int
+     */
     public function inserted_id()
     {
         return (int) self::$db_conn_static->lastInsertId();
     }
 
+    /**
+     * @return __anonymous|array|bool|mixed|\PDOStatement
+     */
     public function get()
     {
         $id = (int) self::$db_conn_static->lastInsertId();

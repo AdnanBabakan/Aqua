@@ -18,6 +18,10 @@ class Router
 
     protected static $current_route;
 
+    /**
+     * @param string $route
+     * @param $function
+     */
     public static function route(string $route, $function) : void
     {
         array_push(self::$routes, [
@@ -26,6 +30,10 @@ class Router
         ]);
     }
 
+    /**
+     * @param $string
+     * @return string
+     */
     protected static function regex_shortcuts($string) : string
     {
         foreach(self::$regex_shortcuts as $k => $v) {
@@ -35,6 +43,9 @@ class Router
         return $string;
     }
 
+    /**
+     * @return array
+     */
     protected static function extract_url_params() : array
     {
         $params = [];
