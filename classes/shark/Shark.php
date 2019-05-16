@@ -117,7 +117,7 @@ class Shark
         "params" => []
     ];
 
-    protected function where_do($operator, $parameters) : self
+    protected function where_do($operator, $parameters) : void
     {
         $clause = [];
         $clause_string = [];

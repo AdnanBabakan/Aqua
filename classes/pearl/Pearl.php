@@ -23,31 +23,28 @@ class Pearl
 
     public static function render_layout(?string $string) : string
     {
+        $raw_content = preg_replace('/\[@layout (.*?)\]/', '', $string);
         if(preg_match_all('/\[@(.*?)\]/', $string, $match)) {
             for($i=0; $i<count($match[0]); $i++) {
                 $full_command = $match[0][$i];
                 $command_array = explode(' ', $match[1][$i]);
                 switch($command_array[0]) {
                     case 'layout':
-                            ob_start();
-                                require_once __ROOT__ . '/views/' . $command_array[1] . '.php';
-                                $layout = ob_get_contents();
-                            ob_end_clean();
-                            $string = self::render_layout(str_replace($full_command, $layout, $string));
+                        ob_start();
+                        require_once __ROOT__ . '/views/' . $command_array[1] . '.php';
+                        $layout = ob_get_clean();
+                        $string = str_replace('[@yield]', $raw_content, $layout);
                         break;
                     case 'include':
                         ob_start();
-                            require __ROOT__ . '/views/' . $command_array[1] . '.php';
-                            $component = ob_get_contents();
-                        ob_end_clean();
+                        require __ROOT__ . '/views/' . $command_array[1] . '.php';
+                        $component = ob_get_clean();
                         $string = self::render_layout(str_replace($full_command, $component, $string));
                         break;
+                    }
                 }
             }
-        }
-
-        echo $raw_content;
-        return '';
+        return $string;
     }
 
     public static function render(string $template, array $parameters = [], bool $is_string = false) : string
@@ -74,9 +71,7 @@ class Pearl
                 ob_end_clean();
             }
 
-            self::render_layout($file);
-
-            die;
+            $file = self::render_layout($file);
 
             if(preg_match_all('/\[\[(.*?)\]\]/', $file, $match)) {
                 for($i=0; $i<count($match[0]); $i++) {

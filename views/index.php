@@ -1,3 +1,3 @@
 [@layout layouts/general]
 
-[[title]] [[message]] [[desc]] [[test]] [[user]]
+<h1>Hello Aqua!</h1>
