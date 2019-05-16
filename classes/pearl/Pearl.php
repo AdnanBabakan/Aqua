@@ -33,7 +33,7 @@ class Pearl
                         ob_start();
                         require_once __ROOT__ . '/views/' . $command_array[1] . '.php';
                         $layout = ob_get_clean();
-                        $string = str_replace('[@yield]', $raw_content, $layout);
+                        $string = self::render_layout(str_replace('[@yield]', $raw_content, $layout));
                         break;
                     case 'include':
                         ob_start();

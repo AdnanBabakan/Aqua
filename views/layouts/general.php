@@ -8,5 +8,7 @@
 </head>
 <body>
     [@yield]
+
+    [@include components/TestComponent]
 </body>
 </html>
