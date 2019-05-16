@@ -15,6 +15,7 @@ class Authenticator
     protected $storage_encryption_method;
     protected $storage_secret_key;
     protected $storage_secret_iv;
+    protected $auth_tag;
     protected $login_page;
     protected $users_table;
     protected $user_username_column;
@@ -30,16 +31,16 @@ class Authenticator
         }
         $hash_algorithm = isset(Core::config()->auth->hash_algorithm)?Core::config()->auth->hash_algorithm:'sha256';
         $this->storage_encryption_method = isset(Core::config()->auth->storage_encryption_method)?Core::config()->auth->storage_encryption_method:'aes-128-gcm';
-        $this->storage_secret_key = isset(Core::config()->auth->storage_secret_key)?Core::config()->auth->storage_secret_key:'';
+        $this->storage_secret_key = isset(Core::config()->auth->storage_secret_key)?Core::config()->auth->storage_secret_key:'AQUA_KEY';
         $this->storage_secret_key = hash($hash_algorithm, $this->storage_secret_key);
-        $this->storage_secret_iv = isset(Core::config()->auth->storage_secret_iv)?Core::config()->auth->storage_secret_iv:'';
+        $this->storage_secret_iv = isset(Core::config()->auth->storage_secret_iv)?Core::config()->auth->storage_secret_iv:'AQUA_IV';
         $this->storage_secret_iv = substr(hash($hash_algorithm, $this->storage_secret_iv), 0, 16);
         $this->login_page = isset(Core::config()->auth->login_page)?Core::config()->auth->login_page:'/login';
     }
 
     public function auth_set_data(string $data_key, ?string $data_value) : void
     {
-        if(Core::config()->auth->use_encoding) $data_value = openssl_encrypt($data_value, 'aes128', 'AA4D5EB4E4C2E', 0, $this->storage_secret_iv);
+        if(Core::config()->auth->use_encoding) $data_value = openssl_encrypt($data_value, $this->storage_encryption_method, $this->storage_secret_key, 0, $this->storage_secret_iv, $this->auth_tag);
         switch($this->storage_type)
         {
             case 'session':
@@ -63,7 +64,7 @@ class Authenticator
                 break;
         }
 
-        if(Core::config()->auth->use_encoding) $data_value = openssl_decrypt($data_value, 'aes128', 'AA4D5EB4E4C2E', 0, $this->storage_secret_iv);
+        if(Core::config()->auth->use_encoding) $data_value = openssl_decrypt($data_value, $this->storage_encryption_method, $this->storage_secret_key, 0, $this->storage_secret_iv, $this->auth_tag);
 
         if(isset($data_value)) {
             return $data_value;
