@@ -4,10 +4,12 @@ use \Aqua\Core as Core;
 use \Aqua\Shark as Shark;
 use \Aqua\SharkCallback as SharkCallback;
 
+// Home
+
 Router::route('/', 'Index@HomeController');
 
-Router::route('/set_key', 'SetKey@HomeController');
+Router::route('/test', 'Test@HomeController');
 
-Router::route('/unset', 'UnsetKey@HomeController');
+// Profile
 
-Router::route('/show', 'Show@HomeController');
+Router::route('/profile', 'Profile@ProfileController');

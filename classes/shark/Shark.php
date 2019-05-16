@@ -150,23 +150,18 @@ class Shark
      * @param $operator
      * @param $parameters
      */
-    protected function where_do($operator, $parameters) : void
+    protected function where_do($operator, ...$parameters)
     {
-        $clause = [];
         $clause_string = [];
-
         if(!is_array($parameters[0])) {
 
             $clause = [$parameters];
-
         } else {
-
             if(isset($parameters[0][0]) and is_array($parameters[0][0])) {
                 $clause = $parameters[0];
             } else {
                 $clause = $parameters;
             }
-
         }
 
         foreach ($clause as $key => $value) {
@@ -174,15 +169,12 @@ class Shark
                 $clause[$key][2] = $clause[$key][1];
                 $clause[$key][1] = '=';
             }
-
             $param_name = $clause[$key][0] . '_' . Misc::generate_random_string(3);
             $clause_string['queries'][] = " $operator {$clause[$key][0]} {$clause[$key][1]} :{$param_name}";
             $clause_string['params'][$param_name] = $clause[$key][2];
-
         }
-
-        $this->where["queries"] = array_merge(isset($this->where["queries"])?$this->where["queries"]:[], isset($clause_string["queries"])?$clause_string["queries"]:[]);
-        $this->where["params"] = array_merge(isset($this->where["params"])?$this->where["params"]:[], isset($clause_string["params"])?$clause_string["params"]:[]);
+        $this->where["queries"] = array_merge($this->where["queries"], $clause_string["queries"]);
+        $this->where["params"] = array_merge($this->where["params"], $clause_string["params"]);
     }
 
     /**
@@ -191,7 +183,7 @@ class Shark
      */
     public function where(...$parameters) : self
     {
-        $this->where_do('AND', $parameters);
+        $this->where_do('AND', ...$parameters);
 
         return $this;
     }
@@ -202,7 +194,7 @@ class Shark
      */
     public function and_where(...$parameters) : self
     {
-        $this->where_do('AND', $parameters);
+        $this->where_do('AND', ...$parameters);
 
         return $this;
     }
@@ -213,7 +205,7 @@ class Shark
      */
     public function or_where(...$parameters) : self
     {
-        $this->where_do('OR', $parameters);
+        $this->where_do('OR', ...$parameters);
 
         return $this;
     }

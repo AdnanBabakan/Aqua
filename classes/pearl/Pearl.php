@@ -2,7 +2,7 @@
 /**
  * @namespace: Aqua
  * @version 0.1
- * This file is the main class that will help you work with Pearl tampleates
+ * This file is the main class that will help you work with Pearl templates
  */
 
 namespace Aqua;

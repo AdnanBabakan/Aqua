@@ -7,12 +7,18 @@
 
 namespace Aqua;
 
+use AquaException;
+
 class Authenticator
 {
     protected $storage_type;
     protected $storage_encryption_method;
     protected $storage_secret_key;
     protected $storage_secret_iv;
+    protected $login_page;
+    protected $users_table;
+    protected $user_username_column;
+    protected $user_password_column;
 
     public function __construct()
     {
@@ -28,6 +34,7 @@ class Authenticator
         $this->storage_secret_key = hash($hash_algorithm, $this->storage_secret_key);
         $this->storage_secret_iv = isset(Core::config()->auth->storage_secret_iv)?Core::config()->auth->storage_secret_iv:'';
         $this->storage_secret_iv = substr(hash($hash_algorithm, $this->storage_secret_iv), 0, 16);
+        $this->login_page = isset(Core::config()->auth->login_page)?Core::config()->auth->login_page:'/login';
     }
 
     public function auth_set_data(string $data_key, ?string $data_value) : void
@@ -75,6 +82,66 @@ class Authenticator
             case 'cookie':
                 setcookie($data_key, '', time() - 200, isset(Core::config()->auth->cookie_domain)?Core::config()->auth->cookie_domain:'/');
                 break;
+        }
+    }
+
+    public function auth_log_in() : void
+    {
+        $this->auth_set_data('auth_logged_in', true);
+    }
+
+    public function auth_user(string $username, string $password)
+    {
+        if(isset(Core::config()->auth->users_table) and isset(Core::config()->auth->user_username_column) and isset(Core::config()->auth->user_password_column)) {
+            $count = count(Shark()->select()->where([
+                [Core::config()->auth->user_username_column, $username],
+                [Core::config()->auth->user_password_column, $password]
+            ])->table(Core::config()->auth->users_table));
+            return $count>0?true:false;
+        } else {
+            try {
+                throw new AquaException('No config provided for authenticator.', -1);
+            } catch(AquaException $e) {
+                return $e;
+            }
+        }
+    }
+
+    public function auth_user_and_log_in(string $username, string $password)
+    {
+        if($this->auth_user($username, $password)) {
+            $this->auth_log_in();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function auth_sign_out() : void
+    {
+        $this->auth_unset_data('auth_logged_in');
+    }
+
+    public function auth_is_logged_in() : bool
+    {
+        $bool = false;
+        switch($this->storage_type)
+        {
+            case 'session':
+                $bool = isset($_SESSION['auth_logged_in']);
+                break;
+            case 'cookie':
+                $bool = isset($_COOKIE['auth_logged_in']);
+                break;
+        }
+
+        return $bool;
+    }
+
+    public function auth_login_needed()
+    {
+        if(!$this->auth_is_logged_in()) {
+            header("Location: {$this->login_page}");
         }
     }
 }
