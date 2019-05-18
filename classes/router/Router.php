@@ -11,6 +11,7 @@ class Router
 {
 
     protected static $routes = [];
+    protected static $maps = [];
 
     protected static $regex_shortcuts = [
         "{(.*?)}" => "(.*?)+"
@@ -29,11 +30,20 @@ class Router
             $methods = explode('|', $match[1]);
         }
 
-        array_push(self::$routes, [
+        self::$routes[] = [
             "route" => preg_replace('/^\[(.*?)\]/', '', $route),
             "function" => $function,
             "methods" => $methods
-        ]);
+        ];
+    }
+
+    /**
+     * @param string $name
+     * @param $function
+     */
+    public static function map(string $name, $function) : void
+    {
+        self::$maps[$name] = $function;
     }
 
     /**
@@ -86,8 +96,10 @@ class Router
 
     public static function run() : void
     {
+        $page_found = false;
         foreach(self::$routes as $route) {
             if(preg_match('/^' . str_replace('/', '\/', self::regex_shortcuts($route['route'])) . '(\/)$/', (__PATH__=='/'?'//':__PATH__))) {
+                $page_found = true;
                 if($route['methods']=='ALL' or in_array($_SERVER['REQUEST_METHOD'], $route['methods'])) {
                     self::$current_route = $route;
                     $params = self::extract_url_params();
@@ -100,12 +112,52 @@ class Router
                         $instance = new $class;
                         $return_value = $instance->{$f[0]}(...$params);
                         switch(gettype($return_value)) {
+                            case 'array':
+                            case 'object':
+                                header('Content-Type: application/json;');
+                                echo json_encode($return_value);
+                                break;
                             default:
                                 header('Content-Type: ' . $instance->content_type . ';');
                                 echo $return_value;
                         }
                     }
+                } else {
+                    $page_found = false;
                 }
+            } else {
+                $page_found = false;
+            }
+        }
+
+        if(!$page_found) {
+            self::run_map('404');
+        }
+    }
+
+    /**
+     * @param $name
+     */
+    protected static function run_map($name)
+    {
+        $map = self::$maps[$name];
+        if(gettype($map)=='object') {
+            echo $map();
+        } elseif(gettype($map)=='string') {
+            $f = explode('@', $map);
+            require_once __ROOT__ . '/controllers/' . $f[1] . '.php';
+            $class = '\\' . $f[1] . '\\' . $f[1];
+            $instance = new $class;
+            $return_value = $instance->{$f[0]}();
+            switch(gettype($return_value)) {
+                case 'array':
+                case 'object':
+                    header('Content-Type: application/json;');
+                    echo json_encode($return_value);
+                    break;
+                default:
+                    header('Content-Type: ' . $instance->content_type . ';');
+                    echo $return_value;
             }
         }
     }
