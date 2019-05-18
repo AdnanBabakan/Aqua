@@ -24,9 +24,15 @@ class Router
      */
     public static function route(string $route, $function) : void
     {
+        $methods = "ALL";
+        if(preg_match('/^\[(.*?)\]/', $route, $match)) {
+            $methods = explode('|', $match[1]);
+        }
+
         array_push(self::$routes, [
-            "route" => $route,
-            "function" => $function
+            "route" => preg_replace('/^\[(.*?)\]/', '', $route),
+            "function" => $function,
+            "methods" => $methods
         ]);
     }
 
@@ -82,20 +88,22 @@ class Router
     {
         foreach(self::$routes as $route) {
             if(preg_match('/^' . str_replace('/', '\/', self::regex_shortcuts($route['route'])) . '(\/)$/', (__PATH__=='/'?'//':__PATH__))) {
-                self::$current_route = $route;
-                $params = self::extract_url_params();
-                if(gettype($route['function'])=='object') {
-                    echo self::$current_route['function'](...$params);
-                } elseif(gettype($route['function'])=='string') {
-                    $f = explode('@', $route['function']);
-                    require_once __ROOT__ . '/controllers/' . $f[1] . '.php';
-                    $class = '\\' . $f[1] . '\\' . $f[1];
-                    $instance = new $class;
-                    $return_value = $instance->{$f[0]}(...$params);
-                    switch(gettype($return_value)) {
-                        default:
-                            header('Content-Type: ' . $instance->content_type . ';');
-                            echo $return_value;
+                if($route['methods']=='ALL' or in_array($_SERVER['REQUEST_METHOD'], $route['methods'])) {
+                    self::$current_route = $route;
+                    $params = self::extract_url_params();
+                    if(gettype($route['function'])=='object') {
+                        echo $route['function'](...$params);
+                    } elseif(gettype($route['function'])=='string') {
+                        $f = explode('@', $route['function']);
+                        require_once __ROOT__ . '/controllers/' . $f[1] . '.php';
+                        $class = '\\' . $f[1] . '\\' . $f[1];
+                        $instance = new $class;
+                        $return_value = $instance->{$f[0]}(...$params);
+                        switch(gettype($return_value)) {
+                            default:
+                                header('Content-Type: ' . $instance->content_type . ';');
+                                echo $return_value;
+                        }
                     }
                 }
             }
