@@ -6,8 +6,7 @@ use \Aqua\SharkCallback as SharkCallback;
 
 // Home
 Router::route('/', 'Index@HomeController');
-Router::route('[POST]/hello', function() {
-    return 'Hi';
-});
 
-Router::map('404', 'e404@ErrorController');
+Router::map('404', function() {
+    echo 'Custom 404';
+});

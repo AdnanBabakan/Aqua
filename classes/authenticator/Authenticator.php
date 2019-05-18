@@ -7,8 +7,6 @@
 
 namespace Aqua;
 
-use AquaException;
-
 class Authenticator
 {
     protected $storage_type;
@@ -101,8 +99,8 @@ class Authenticator
             return $count>0?true:false;
         } else {
             try {
-                throw new \AquaException(__('No config provided for authenticator.', 'core'), -1);
-            } catch(\AquaException $e) {
+                throw new AquaException(__('No config provided for authenticator.', 'core'), -1);
+            } catch(AquaException $e) {
                 echo $e;
             }
         }
