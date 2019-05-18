@@ -21,6 +21,8 @@ require_once __ROOT__ . '/classes/shark/Shark.php';
 
 require_once __ROOT__ . './classes/http/HTTP.php';
 
+require_once __ROOT__ . './classes/http/Input.php';
+
 require_once __ROOT__ . '/classes/authenticator/Authenticator.php';
 
 require_once __ROOT__ . '/classes/pearl/Pearl.php';

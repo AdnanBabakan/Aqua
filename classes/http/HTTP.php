@@ -9,7 +9,7 @@ namespace Aqua;
 
 class Http
 {
-    public static function redirect(string $address)
+    public static function redirect(string $address) : void
     {
         if(preg_match('/^http(s)?:\/\//i', $address)) {
             $redirect_address = $address;
