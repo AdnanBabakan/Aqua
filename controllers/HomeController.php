@@ -15,7 +15,7 @@ class HomeController extends Controller
 
     public function Test()
     {
-        $this->auth_set_data('id', '22');
-        debug($this->auth_get_data('id'));
+        $this->auth_user('', '');
+        return 'Hello';
     }
 }

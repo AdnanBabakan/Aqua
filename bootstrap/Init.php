@@ -8,13 +8,16 @@ session_start();
 define('__ROOT__', str_replace('\\', '/',  realpath(__DIR__ . '/..'))); // Access Aqua root folder with this constant
 define('__PATH__', '/' . (isset($_GET['path'])?$_GET['path'] . (substr($_GET['path'], -1)=='/'?'':'/'):''));
 
-require_once __ROOT__ . '/classes/errors/Exceptions.php';
 
 require_once __ROOT__ . '/classes/core/Core.php';
 
+require_once __ROOT__ . '/classes/core/Misc.php';
+
+require_once __ROOT__ . '/classes/i18n/I18N.php';
+
 require_once __ROOT__ . '/classes/shark/Shark.php';
 
-require_once __ROOT__ . '/classes/core/Misc.php';
+require_once __ROOT__ . '/classes/exceptions/Exceptions.php';
 
 require_once __ROOT__ . '/classes/authenticator/Authenticator.php';
 

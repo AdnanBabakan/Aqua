@@ -24,7 +24,7 @@ class Authenticator
     public function __construct()
     {
         $storage_type = Core::config()->auth->storage_type;
-        if(!($storage_type == 'session' or $storage_type == 'cookie')){
+        if(!($storage_type == 'session' or $storage_type == 'cookie')) {
             $this->storage_type = 'session';
         } else {
             $this->storage_type = $storage_type;
@@ -38,7 +38,7 @@ class Authenticator
         $this->login_page = isset(Core::config()->auth->login_page)?Core::config()->auth->login_page:'/login';
     }
 
-    public function auth_set_data(string $data_key, ?string $data_value) : void
+    public function auth_set_data(string $data_key, $data_value) : void
     {
         if(Core::config()->auth->use_encoding) $data_value = openssl_encrypt($data_value, $this->storage_encryption_method, $this->storage_secret_key, 0, $this->storage_secret_iv, $this->auth_tag);
         switch($this->storage_type)
@@ -101,9 +101,9 @@ class Authenticator
             return $count>0?true:false;
         } else {
             try {
-                throw new AquaException('No config provided for authenticator.', -1);
-            } catch(AquaException $e) {
-                return $e;
+                throw new \AquaException(__('No config provided for authenticator.', 'core'), -1);
+            } catch(\AquaException $e) {
+                echo $e;
             }
         }
     }

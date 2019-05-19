@@ -93,11 +93,6 @@ class Router
                     $instance = new $class;
                     $return_value = $instance->{$f[0]}(...$params);
                     switch(gettype($return_value)) {
-                        case 'array':
-                        case 'object':
-                            header('Content-Type: application/json;');
-                            echo json_encode($return_value);
-                        break;
                         default:
                             header('Content-Type: ' . $instance->content_type . ';');
                             echo $return_value;
