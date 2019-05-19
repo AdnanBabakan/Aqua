@@ -142,7 +142,7 @@ class Authenticator
     public function auth_login_needed()
     {
         if(!$this->auth_is_logged_in()) {
-            header("Location: {$this->login_page}");
+            HTTP::redirect($this->login_page);
         }
     }
 }

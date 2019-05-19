@@ -15,9 +15,11 @@ require_once __ROOT__ . '/classes/core/Misc.php';
 
 require_once __ROOT__ . '/classes/i18n/I18N.php';
 
+require_once __ROOT__ . '/classes/exceptions/Exceptions.php';
+
 require_once __ROOT__ . '/classes/shark/Shark.php';
 
-require_once __ROOT__ . '/classes/exceptions/Exceptions.php';
+require_once __ROOT__ . './classes/http/HTTP.php';
 
 require_once __ROOT__ . '/classes/authenticator/Authenticator.php';
 
