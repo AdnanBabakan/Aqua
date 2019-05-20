@@ -147,6 +147,7 @@ class Router
 
         $appended = self::$appends;
         echo <<<HTML
+        
         <!--AQUA_APPEND-->
         {$appended}
         <!--AQUA_APPEND-->

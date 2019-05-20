@@ -10,6 +10,7 @@ namespace Aqua;
 class Pearl
 {
     protected static $default_parameters = [];
+    protected static $cache_id = '';
 
     /**
      * @param array ...$parameters
@@ -68,14 +69,17 @@ class Pearl
 
         $parameters = array_merge($parameters, self::$default_parameters);
 
-        $cache = new Cache($template, $parameters);
-        
-        if($cache->cache_exists() && Core::config()->general->cache) {
-            
-            $file = $cache->get_cache();
+        $cached = false;
 
-        } else {
+        if(Core::config()->general->cache) {
+            $cache = new Cache($template, $parameters);
+            if($cache->cache_exists()) {
+                $cached = true;
+                $file = $cache->get_cache();
+            }
+        }
 
+        if(!$cached) {
             extract($parameters);
 
             if($is_string) {
@@ -104,9 +108,9 @@ class Pearl
             $file = preg_replace('/\[@(.*?)\]/', '', $file);
 
             if(Core::config()->general->cache) {
+                $cache = new Cache($template, $parameters);
                 $cache->save_cache($file);
             }
-
         }
 
         return $file;

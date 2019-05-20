@@ -1,3 +1,3 @@
 [@layout layouts/general]
 
-<h1>Hello Aqua!</h1>
+<h1>Hello Aqua! 2</h1>
