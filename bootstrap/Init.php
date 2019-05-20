@@ -5,6 +5,8 @@
 */
 session_start();
 
+define('AQUA_BEGIN_TIME', microtime(true));
+
 define('__ROOT__', str_replace('\\', '/',  realpath(__DIR__ . '/..'))); // Access Aqua root folder with this constant
 define('__PATH__', '/' . (isset($_GET['path'])?$_GET['path'] . (substr($_GET['path'], -1)=='/'?'':'/'):''));
 
@@ -48,6 +50,15 @@ require_once __ROOT__ . '/classes/controller/Controller.php';
 require_once __ROOT__ . '/classes/router/Router.php';
 
 require_once __ROOT__ . '/routes/Web.php';
+
+require_once __ROOT__ . '/classes/developer/Developer.php';
+
+define('AQUA_END_TIME', microtime(true));
+
+// Initiate Developer tools
+if(isset(\Aqua\Core::config()->general->dev_tools) and \Aqua\Core::config()->general->dev_tools) {
+    \Aqua\Developer::init();
+}
 
 // Initiate Router
 \Aqua\Router::run();

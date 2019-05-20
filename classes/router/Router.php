@@ -94,6 +94,17 @@ class Router
         return $params;
     }
 
+    protected static $appends = '';
+
+    public static function append($string) : void
+    {
+        if(gettype($string)=='object') {
+            self::$appends .= $string();
+        } else {
+            self::$appends .= $string;
+        }
+    }
+
     public static function run(): void
     {
         $page_found = false;
@@ -133,6 +144,13 @@ class Router
         if (!$page_found) {
             self::run_map('404');
         }
+
+        $appended = self::$appends;
+        echo <<<HTML
+        <!--AQUA_APPEND-->
+        {$appended}
+        <!--AQUA_APPEND-->
+HTML;
     }
 
     /**
