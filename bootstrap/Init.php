@@ -14,6 +14,9 @@ require_once  __ROOT__ . '/classes/errors/ErrorHandler.php';
 set_error_handler("\Aqua\ErrorHandler::error_handler");
 register_shutdown_function('\Aqua\ErrorHandler::fatal_error_handler');
 
+// Composer loader if exists
+!file_exists(__ROOT__ . '/vendor') or require_once __ROOT__ . '/vendor/autoload.php';
+
 require_once __ROOT__ . '/classes/core/Core.php';
 
 require_once __ROOT__ . '/classes/core/Misc.php';
