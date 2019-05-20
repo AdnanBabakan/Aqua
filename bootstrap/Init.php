@@ -55,10 +55,10 @@ require_once __ROOT__ . '/classes/developer/Developer.php';
 
 define('AQUA_END_TIME', microtime(true));
 
+// Initiate Router
+\Aqua\Router::run();
+
 // Initiate Developer tools
 if(isset(\Aqua\Core::config()->general->dev_tools) and \Aqua\Core::config()->general->dev_tools) {
     \Aqua\Developer::init();
 }
-
-// Initiate Router
-\Aqua\Router::run();

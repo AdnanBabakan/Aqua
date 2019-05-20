@@ -11,8 +11,7 @@ class Developer
 {
     public static function init() : void
     {
-        Router::append(function() {
-            $output = '
+        $output = '
         <style>
             #AQUA_DEVTOOLS {
                 background: #ffffff;
@@ -39,15 +38,17 @@ class Developer
         </style>
         <div id="AQUA_DEVTOOLS">';
 
-            $output .= '<div><div style="width: 80px;">' . file_get_contents(__ROOT__ . '/Aqua.svg') . '</div></div>';
+        $output .= '<div><div style="width: 80px;">' . file_get_contents(__ROOT__ . '/Aqua.svg') . '</div></div>';
 
-            $output .= '<div>Render: ' . self::render_time() . ' seconds</div>';
+        $output .= '<div>Render: ' . self::render_time() . ' seconds</div>';
 
-            $output .= '<div>Cache Enabled: ' . (Core::config()->general->cache?'Yes':'No') . '</div>';
+        $output .= '<div>Cache Enabled: ' . (Core::config()->general->cache?'Yes':'No') . '</div>';
 
-            $output .= '</div>';
-            return $output;
-        });
+        !Core::config()->general->cache or $output .= '<div>Cache ID: ' . Pearl::get_cache_id() . '</div>';
+
+        $output .= '</div>';
+
+        echo $output;
     }
 
     public static function render_time()

@@ -34,7 +34,7 @@ class Cache
         file_put_contents($this->file_address, $content);
     }
 
-    public function cache_id() : string
+    public function get_cache_id() : string
     {
         return $this->file_name;
     }

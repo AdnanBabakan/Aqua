@@ -10,7 +10,7 @@ namespace Aqua;
 class Pearl
 {
     protected static $default_parameters = [];
-    protected static $cache_id = '';
+    protected static $cache_id;
 
     /**
      * @param array ...$parameters
@@ -26,6 +26,11 @@ class Pearl
     public static function get_default_parameters() : array
     {
         return self::$default_parameters;
+    }
+
+    public static function get_cache_id()
+    {
+        return isset(self::$cache_id)?self::$cache_id:'NaN';
     }
 
     /**
@@ -66,13 +71,13 @@ class Pearl
      */
     public static function render(string $template, array $parameters = [], bool $is_string = false) : string
     {
-
         $parameters = array_merge($parameters, self::$default_parameters);
 
         $cached = false;
 
         if(Core::config()->general->cache) {
             $cache = new Cache($template, $parameters);
+            self::$cache_id = $cache->get_cache_id();
             if($cache->cache_exists()) {
                 $cached = true;
                 $file = $cache->get_cache();
@@ -109,6 +114,7 @@ class Pearl
 
             if(Core::config()->general->cache) {
                 $cache = new Cache($template, $parameters);
+                self::$cache_id = $cache->get_cache_id();
                 $cache->save_cache($file);
             }
         }
