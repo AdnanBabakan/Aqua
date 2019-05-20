@@ -13,6 +13,8 @@ class Shark
 {
     protected $db_conn;
     protected static $db_conn_static;
+    protected static $query_count = 0;
+    protected static $raw_queries = [];
 
     protected $queries = [];
 
@@ -39,6 +41,16 @@ class Shark
         } catch(\PDOException $e) {
             die('Database connection error!');
         }
+    }
+
+    public static function get_executed_query_count()
+    {
+        return self::$query_count;
+    }
+
+    public static function get_raw_queries()
+    {
+        return self::$raw_queries;
     }
 
     /**
@@ -73,18 +85,40 @@ class Shark
         return $this->table(end($table_name));
     }
 
+    protected function query_to_string($query, $params) {
+        $keys = array();
+
+        # build a regular expression for each parameter
+        foreach ($params as $key => $value) {
+            if (is_string($key)) {
+                $keys[] = '/:'.$key.'/';
+            } else {
+                $keys[] = '/[?]/';
+            }
+        }
+
+        $query = preg_replace($keys, $params, $query, 1, $count);
+
+        #trigger_error('replaced '.$count.' keys');
+
+        return $query;
+    }
+
     /**
      * @param string $table
      * @return array|bool|mixed|\PDOStatement|__anonymous@2484
      */
     public function table(string $table)
     {
+        self::$query_count += count($this->queries);
         foreach($this->queries as $query) {
             $sql = str_replace('{{table}}', $table, $query["query"]);
             $sql = str_replace('{{where}}', preg_replace('/^(.*?)(AND|OR)/', ' WHERE ', implode('', (isset($this->where["queries"])?$this->where["queries"]:[]))), $sql);
 
             $result = $this->db_conn->prepare($sql);
-            $result->execute(array_merge((isset($query["params"])?$query["params"]:[]), (isset($this->where['params'])?$this->where['params']:[])));
+            $query_params = array_merge((isset($query["params"])?$query["params"]:[]), (isset($this->where['params'])?$this->where['params']:[]));
+            $result->execute($query_params);
+            self::$raw_queries[] = $this->query_to_string($sql, $query_params);
         }
 
         if($this->fetch == 1) {
