@@ -11,10 +11,17 @@ class ErrorHandler
 {
     public static function error_handler($code, $message, $file, $line)
     {
+        $escaped_file_address = str_replace('\\', '\\\\', $file);
         echo <<<HTML
 <!DOCTYPE html>
-<div style="background: #eeeeee; position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 9999999999999999999999999999999999; overflow: scroll; line-height: 50px; font-family: monospace;">
-    <span style="font-size: 28px; font-weight: 300;">Aqua Error:</span><br>[{$code}] {$message} - File: '{$file}' - Line: '{$line}'
+<div style="background: #efefef; position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 9999999999999999999999999999999999; overflow: scroll; line-height: 50px; font-family: monospace;">
+    <div style="background: #1B1464; font-size: 28px; font-weight: 300; padding: 10px; color: #ffffff;">Aqua Error</div>
+    <p style="padding: 25px;">[{$code}] {$message} - File: '{$file}' - Line: '{$line}'</p>
+    <script>
+        window.onload = function() {
+            document.title = "Aqua Error: [{$code}] {$message} File: '{$escaped_file_address}' - Line: '{$line}'";
+        }
+    </script>
 </div>
 HTML;
         die;
