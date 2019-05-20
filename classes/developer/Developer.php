@@ -43,7 +43,7 @@ class Developer
 
             $output .= '<div>Render: ' . self::render_time() . ' seconds</div>';
 
-            $output .= '<div>Render: ' . self::render_time() . ' seconds</div>';
+            $output .= '<div>Render: Test seconds</div>';
 
             $output .= '</div>';
             return $output;
