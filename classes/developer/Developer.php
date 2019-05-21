@@ -44,10 +44,21 @@ class Developer
                 width: 100%;
                 height: 0;
                 overflow-y: hidden;
+                display: flex;
+                flex-wrap: wrap;;
+            }
+            
+            #AQUA_DEVTOOLS > #AQUA_DEV_TOOLS_MORE > div.box {
+                width: calc(50% - 40px);
+                padding: 20px;
             }
             
             #AQUA_DEVTOOLS > #AQUA_DEV_TOOLS_MORE section {
                 padding: 0 50px;
+            }
+            
+            #AQUA_DEVTOOLS > #AQUA_DEV_TOOLS_MORE ol li {
+            margin-bottom: 10px;
             }
         </style>
         <div id="AQUA_DEVTOOLS"><div id="AQUA_DEVTOOLS_BAR">';
@@ -70,15 +81,41 @@ class Developer
 
         $output .= '<div id="AQUA_DEV_TOOLS_MORE">';
 
-        !count(Shark::get_raw_queries())>0 or $output .= '<h2>SQL Queries executed:</h2>';
+        $output .= '<div class="box">';
 
-        $output .= '<section>';
+        $output .= '<h2>SQL Queries executed:</h2>';
 
-        foreach (Shark::get_raw_queries() as $raw_query) {
-            $output .= $raw_query . '<br>';
+        $output .= '<section><ol>';
+
+        if(count(Shark::get_raw_queries())>0) {
+            foreach (Shark::get_raw_queries() as $raw_query) {
+                $output .= '<li>' . $raw_query . '</li>';
+            }
+        } else {
+            $output .= 'None';
         }
 
-        $output .= '</section>';
+        $output .= '</ol></section>';
+
+        $output .= '</div>';
+
+        $output .= '<div class="box">';
+
+        $output .= '<h2>Included Files:</h2>';
+
+        $output .= '<section><ol>';
+
+        if(count(get_included_files())>0) {
+            foreach (get_included_files() as $file) {
+                $output .= '<li>' . $file . '</li>';
+            }
+        } else {
+            $output .= 'None';
+        }
+
+        $output .= '</ol></section>';
+
+        $output .= '</div>';
 
         $output .= '</div>';
 
@@ -90,12 +127,10 @@ class Developer
                 if(!isOpen || isOpen=="false") {
                     isOpen = true;
                      document.getElementById("AQUA_DEV_TOOLS_MORE").style.height = "50vh";
-                     document.getElementById("AQUA_DEV_TOOLS_MORE").style.padding = "20px";
                      document.getElementById("AQUA_DEV_TOOLS_MORE").style.overflowY = "auto";
                 } else {
                      isOpen = false;
                      document.getElementById("AQUA_DEV_TOOLS_MORE").style.height = "0";
-                     document.getElementById("AQUA_DEV_TOOLS_MORE").style.padding = "0";
                      document.getElementById("AQUA_DEV_TOOLS_MORE").style.overflowY = "hidden";
                 }
                 window.localStorage.isAquaDevToolsOpen = isOpen;
