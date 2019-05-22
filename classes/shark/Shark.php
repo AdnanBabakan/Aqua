@@ -24,14 +24,36 @@ class Shark
     public function __construct()
     {
         $db = Core::config()->database;
+        $db_type = (isset($db->type)?$db->type:"mysql");
 
-        try {
-            $this->db_conn = new \PDO("mysql:host={$db->address}:{$db->port};dbname={$db->name}", $db->username, $db->password);
-            $this->db_conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-
-            self::$db_conn_static = $this->db_conn;
-        } catch(\PDOException $e) {
-            die('Database connection error!');
+        if(isset($db) and count((array)$db)) {
+            switch($db_type) {
+                case 'mysql':
+                    try {
+                        $this->db_conn = new \PDO("mysql:host={$db->address}:{$db->port};dbname={$db->name}", $db->username, $db->password);
+                        $this->db_conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+                        self::$db_conn_static = $this->db_conn;
+                    } catch(\PDOException $e) {
+                        die('Database connection error!');
+                    }
+                    break;
+                case 'sqlite':
+                    try {
+                        $this->db_conn = new \PDO("sqlite:" . __ROOT__ . '/' . $db->address);
+                        $this->db_conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+                        self::$db_conn_static = $this->db_conn;
+                    } catch(\PDOException $e) {
+                        die('Database connection error!');
+                    }
+                    break;
+                default:
+                    try {
+                        throw new AquaException(__('\'' . $db->type . '\' is not a supported database type.', 'core'), -1);
+                    } catch(AquaException $e) {
+                        echo $e;
+                    }
+                    break;
+            }
         }
     }
 
@@ -138,6 +160,11 @@ class Shark
                 }
             };
         }
+    }
+
+    public function execute()
+    {
+        return $this->table('');
     }
 
     /**
