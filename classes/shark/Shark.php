@@ -2,7 +2,7 @@
 /**
  * @namespace: Aqua
  * @version 0.1
- * This file is the main class that handles sql helpers across the appliaction
+ * This file is the main class that handles sql helpers across the application
  */
 
 namespace Aqua;
@@ -19,14 +19,6 @@ class Shark
     protected $queries = [];
 
     /**
-     * @return Shark
-     */
-    public static function db() : self
-    {
-        return new self();
-    }
-
-    /**
      * Shark constructor.
      */
     public function __construct()
@@ -41,6 +33,11 @@ class Shark
         } catch(\PDOException $e) {
             die('Database connection error!');
         }
+    }
+
+    public function get_db_connection()
+    {
+        return $this->db_conn;
     }
 
     public static function get_executed_query_count()

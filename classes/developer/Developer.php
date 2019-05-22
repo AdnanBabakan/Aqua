@@ -49,16 +49,17 @@ class Developer
             }
             
             #AQUA_DEVTOOLS > #AQUA_DEV_TOOLS_MORE > div.box {
-                width: calc(50% - 40px);
+                width: calc(100% / 3 - 40px);
                 padding: 20px;
             }
             
             #AQUA_DEVTOOLS > #AQUA_DEV_TOOLS_MORE section {
                 padding: 0 50px;
+                line-height: 20px;
             }
             
             #AQUA_DEVTOOLS > #AQUA_DEV_TOOLS_MORE ol li {
-            margin-bottom: 10px;
+                margin-bottom: 10px;
             }
         </style>
         <div id="AQUA_DEVTOOLS"><div id="AQUA_DEVTOOLS_BAR">';
@@ -74,6 +75,8 @@ class Developer
         $output .= '<div>Used RAM: ' . memory_get_usage() / 1000000 . ' MB</div>';
 
         $output .= '<div>SQL Queries Executed: ' . Shark::get_executed_query_count() . '</div>';
+
+        $output .= '<div>Aqua Version: ' . Core::aqua_data()->version . '</div>';
 
         $output .= '<div style="cursor: pointer;" id="AQUA_MORE_DETAILS">More Details (F9)</div>';
 
@@ -117,6 +120,22 @@ class Developer
 
         $output .= '</div>';
 
+        $output .= '<div class="box">';
+
+        $output .= '<h2>Server Info:</h2>';
+
+        $output .= '<section>';
+
+        $output .= 'PHP Version: ' . phpversion() . '<br>';
+
+        $output .= 'Database Version: ' . Shark()->get_db_connection()->getAttribute(\PDO::ATTR_SERVER_VERSION) . '<br>';
+
+        $output .= 'Database Driver: ' . Shark()->get_db_connection()->getAttribute(\PDO::ATTR_DRIVER_NAME) . '<br>';
+
+        $output .= '</section>';
+
+        $output .= '</div>';
+
         $output .= '</div>';
 
         $output .= '</div>';
@@ -124,7 +143,7 @@ class Developer
         $output .= '<script>
             var isOpen = window.localStorage.hasOwnProperty("isAquaDevToolsOpen")?window.localStorage.isAquaDevToolsOpen:true;
             var openAquaMoreDetails = function() {
-                if(!isOpen || isOpen=="false") {
+                if(!isOpen || isOpen == "false") {
                     isOpen = true;
                      document.getElementById("AQUA_DEV_TOOLS_MORE").style.height = "50vh";
                      document.getElementById("AQUA_DEV_TOOLS_MORE").style.overflowY = "auto";
@@ -143,7 +162,7 @@ class Developer
                 }
              }
              window.onload = function() {
-                if(isOpen=="true") {
+                if(isOpen == "true") {
                     isOpen = false;
                     openAquaMoreDetails();
                 }

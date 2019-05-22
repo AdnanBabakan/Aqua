@@ -20,4 +20,11 @@ trait Config
     {
         return json_decode(json_encode(parse_ini_file(__ROOT__ . '/AquaConfig.ini', true)));
     }
+
+    public static function aqua_data() : object
+    {
+        return json_decode(json_encode([
+            "version" => "Core 0.4-alpha"
+        ]));
+    }
 }

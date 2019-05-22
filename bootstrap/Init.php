@@ -53,10 +53,13 @@ require_once __ROOT__ . '/routes/Web.php';
 
 require_once __ROOT__ . '/classes/developer/Developer.php';
 
-define('AQUA_END_TIME', microtime(true));
+//Initiate Shark
+Shark();
 
 // Initiate Router
 \Aqua\Router::run();
+
+define('AQUA_END_TIME', microtime(true));
 
 // Initiate Developer tools
 if(isset(\Aqua\Core::config()->general->dev_tools) and \Aqua\Core::config()->general->dev_tools) {

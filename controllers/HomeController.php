@@ -14,7 +14,6 @@ class HomeController extends Controller
 
     public function Test()
     {
-        $this->auth_user('', '');
         return 'Hello';
     }
 }
