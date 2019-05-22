@@ -197,7 +197,7 @@ class Shark
             }
         }
         
-        if (count($clause[0]) > 1) {
+        if (count($clause[0]) > 1 and !is_int(array_keys($clause[0])[0])) {
             foreach ($clause[0] as $key => $value) {
                 $clause[] = [$key, $value];
             }
@@ -219,7 +219,7 @@ class Shark
             $clause_string['queries'][] = " $operator {$value[0]} {$value[1]} :{$param_name}";
             $clause_string['params'][$param_name] = $value[2];
         }
-        
+
         $this->where["queries"] = array_merge($this->where["queries"], $clause_string["queries"]);
         $this->where["params"] = array_merge($this->where["params"], $clause_string["params"]);
 
