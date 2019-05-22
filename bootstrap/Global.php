@@ -14,7 +14,7 @@ function Shark()
 }
 
 // Colored var_dum
-function debug(...$a)
+function debug(...$object)
 {
-    return \Aqua\Core::var_dump(...$a);
+    return \Aqua\Core::var_dump(...$object);
 }

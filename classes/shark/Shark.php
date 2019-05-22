@@ -188,7 +188,6 @@ class Shark
     {
         $clause_string = [];
         if(!is_array($parameters[0])) {
-
             $clause = [$parameters];
         } else {
             if(isset($parameters[0][0]) and is_array($parameters[0][0])) {
@@ -197,18 +196,33 @@ class Shark
                 $clause = $parameters;
             }
         }
-
-        foreach ($clause as $key => $value) {
-            if(count($value) == 2) {
-                $clause[$key][2] = $clause[$key][1];
-                $clause[$key][1] = '=';
+        
+        if (count($clause[0]) > 1) {
+            foreach ($clause[0] as $key => $value) {
+                $clause[] = [$key, $value];
             }
-            $param_name = $clause[$key][0] . '_' . Misc::generate_random_string(3);
-            $clause_string['queries'][] = " $operator {$clause[$key][0]} {$clause[$key][1]} :{$param_name}";
-            $clause_string['params'][$param_name] = $clause[$key][2];
+            unset($clause[0]);
         }
+
+        foreach ($clause as $value) {            
+            foreach($value as $sub_key => $sub_value) {
+                if (!is_int($sub_key)) {
+                    $value = [$sub_key, $sub_value];
+                }
+            }
+            if(count($value) == 2) {
+                $value[2] = $value[1];
+                $value[1] = '=';
+            }
+
+            $param_name = $value[0] . '_' . Misc::generate_random_string(3);
+            $clause_string['queries'][] = " $operator {$value[0]} {$value[1]} :{$param_name}";
+            $clause_string['params'][$param_name] = $value[2];
+        }
+        
         $this->where["queries"] = array_merge($this->where["queries"], $clause_string["queries"]);
         $this->where["params"] = array_merge($this->where["params"], $clause_string["params"]);
+
     }
 
     /**

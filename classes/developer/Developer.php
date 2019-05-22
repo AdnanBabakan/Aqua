@@ -64,13 +64,13 @@ class Developer
 
         $output .= '<div>SQL Queries Executed: ' . Shark::get_executed_query_count() . '</div>';
 
-        $output .= '<div style="cursor: pointer;" id="AQUA_MORE_DETAILS">More Details...</div>';
+        $output .= '<div style="cursor: pointer;" id="AQUA_MORE_DETAILS">More Details (F9)</div>';
 
         $output .= '</div>';
 
         $output .= '<div id="AQUA_DEV_TOOLS_MORE">';
 
-        $output .= '<h2>SQL Queries executed:</h2>';
+        !count(Shark::get_raw_queries())>0 or $output .= '<h2>SQL Queries executed:</h2>';
 
         $output .= '<section>';
 
@@ -86,19 +86,26 @@ class Developer
 
         $output .= '<script>
             var isOpen = false;
-            document.getElementById("AQUA_MORE_DETAILS").addEventListener("click", function() {
-               if(!isOpen) {
-                   isOpen = true;
-                    document.getElementById("AQUA_DEV_TOOLS_MORE").style.height = "50vh";
-                    document.getElementById("AQUA_DEV_TOOLS_MORE").style.padding = "20px";
-                    document.getElementById("AQUA_DEV_TOOLS_MORE").style.overflowY = "auto";
-               } else {
-                    isOpen = false;
-                    document.getElementById("AQUA_DEV_TOOLS_MORE").style.height = "0";
-                    document.getElementById("AQUA_DEV_TOOLS_MORE").style.padding = "0";
-                    document.getElementById("AQUA_DEV_TOOLS_MORE").style.overflowY = "hidden";
-               }
-            });
+            var openAquaMoreDetails = function() {
+                if(!isOpen) {
+                    isOpen = true;
+                     document.getElementById("AQUA_DEV_TOOLS_MORE").style.height = "50vh";
+                     document.getElementById("AQUA_DEV_TOOLS_MORE").style.padding = "20px";
+                     document.getElementById("AQUA_DEV_TOOLS_MORE").style.overflowY = "auto";
+                } else {
+                     isOpen = false;
+                     document.getElementById("AQUA_DEV_TOOLS_MORE").style.height = "0";
+                     document.getElementById("AQUA_DEV_TOOLS_MORE").style.padding = "0";
+                     document.getElementById("AQUA_DEV_TOOLS_MORE").style.overflowY = "hidden";
+                }
+            }
+            document.getElementById("AQUA_MORE_DETAILS").addEventListener("click", openAquaMoreDetails);
+            window.onkeyup = function(e) {
+                var key = e.keyCode ? e.keyCode : e.which;
+                if(key == 120) {
+                    openAquaMoreDetails();
+                }
+             }
         </script>';
         echo $output;
     }
