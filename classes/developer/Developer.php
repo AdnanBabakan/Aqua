@@ -85,9 +85,9 @@ class Developer
         $output .= '</div>';
 
         $output .= '<script>
-            var isOpen = false;
+            var isOpen = window.localStorage.hasOwnProperty("isAquaDevToolsOpen")?window.localStorage.isAquaDevToolsOpen:true;
             var openAquaMoreDetails = function() {
-                if(!isOpen) {
+                if(!isOpen || isOpen=="false") {
                     isOpen = true;
                      document.getElementById("AQUA_DEV_TOOLS_MORE").style.height = "50vh";
                      document.getElementById("AQUA_DEV_TOOLS_MORE").style.padding = "20px";
@@ -98,11 +98,18 @@ class Developer
                      document.getElementById("AQUA_DEV_TOOLS_MORE").style.padding = "0";
                      document.getElementById("AQUA_DEV_TOOLS_MORE").style.overflowY = "hidden";
                 }
+                window.localStorage.isAquaDevToolsOpen = isOpen;
             }
             document.getElementById("AQUA_MORE_DETAILS").addEventListener("click", openAquaMoreDetails);
             window.onkeyup = function(e) {
                 var key = e.keyCode ? e.keyCode : e.which;
                 if(key == 120) {
+                    openAquaMoreDetails();
+                }
+             }
+             window.onload = function() {
+                if(isOpen=="true") {
+                    isOpen = false;
                     openAquaMoreDetails();
                 }
              }
