@@ -7,8 +7,13 @@
 
 namespace Aqua;
 
+require_once 'traits/Params.php';
+
 class Controller extends Authenticator
 {
+
+    use Params;
+
     public $content_type = 'text/html';
 
     public function __construct()

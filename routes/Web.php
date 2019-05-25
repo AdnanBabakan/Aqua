@@ -6,3 +6,7 @@ use \Aqua\SharkCallback as SharkCallback;
 
 // Home
 Router::route('/', 'Index@HomeController');
+
+Router::route('/test', 'Test@HomeController');
+
+Router::route('/aaaa', 'Test@HomeController');

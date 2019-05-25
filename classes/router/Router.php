@@ -107,10 +107,10 @@ class Router
 
     public static function run(): void
     {
-        $page_found = false;
+        $page_found = 0;
         foreach (self::$routes as $route) {
             if (preg_match('/^' . str_replace('/', '\/', self::regex_shortcuts($route['route'])) . '(\/)$/', (__PATH__ == '/' ? '//' : __PATH__))) {
-                $page_found = true;
+                $page_found++;
                 if ($route['methods'] == 'ALL' or in_array($_SERVER['REQUEST_METHOD'], $route['methods'])) {
                     self::$current_route = $route;
                     $params = self::extract_url_params();
@@ -133,15 +133,11 @@ class Router
                                 echo $return_value;
                         }
                     }
-                } else {
-                    $page_found = false;
                 }
-            } else {
-                $page_found = false;
             }
         }
 
-        if (!$page_found) {
+        if ($page_found==0) {
             self::run_map('404');
         }
 

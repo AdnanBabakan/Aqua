@@ -2,14 +2,14 @@
 /**
  * @namespace: Aqua
  * @version 0.1
- * This static class will help you handle the params which are sent by forms
+ * This trait will help to handle the params which are sent by forms
  */
 
 namespace Aqua;
 
-class Input
+trait Params
 {
-    public static function params(string $name = Null, $type = Null)
+    public function params(string $name = Null, $type = Null)
     {
         if(!$type) {
             $params = array_merge($_GET, $_POST);
@@ -19,19 +19,19 @@ class Input
             $params = $_POST;
         }
         if($name) {
-            return htmlspecialchars($params[$name]);
+            return htmlspecialchars(isset($params[$name])?$params[$name]:'NaN');
         } else {
             return array_map('htmlspecialchars', $params);
         }
     }
 
-    public static function POST(string $name = Null)
+    public function POST(string $name = Null)
     {
-        return self::params($name, 'POST');
+        return $this->params($name, 'POST');
     }
 
-    public static function GET(string $name = Null)
+    public function GET(string $name = Null)
     {
-        return self::params($name, 'GET');
+        return $this->params($name, 'GET');
     }
 }
