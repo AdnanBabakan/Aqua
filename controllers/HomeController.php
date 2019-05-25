@@ -14,6 +14,6 @@ class HomeController extends Controller
 
     public function Test()
     {
-        return $this->GET('name');
+        return $this->get_name_a;
     }
 }

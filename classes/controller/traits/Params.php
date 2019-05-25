@@ -13,11 +13,17 @@ trait Params
     {
         if(!$type) {
             $params = array_merge($_GET, $_POST);
-        } else if($type == 'GET') {
+        } else if($type == 'GET' or $type == 'get') {
             $params = $_GET;
-        } else if($type == 'POST') {
+        } else if($type == 'POST' or $type == 'post') {
             $params = $_POST;
         }
+        $temp = [];
+        foreach($params as $key => $value)
+        {
+            $temp[str_replace('-', '_', $key)] = $value;
+        }
+        $params = array_merge($params, $temp);
         if($name) {
             return htmlspecialchars(isset($params[$name])?$params[$name]:'NaN');
         } else {

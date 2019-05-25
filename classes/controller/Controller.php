@@ -30,4 +30,11 @@ class Controller extends Authenticator
         $this->content_type = $type;
     }
 
+    public function __get($name)
+    {
+        if(preg_match('/^(get|post)_(.*)/i', $name, $matches)) {
+            return $this->params($matches[2], $matches[1]);
+        }
+    }
+
 }
