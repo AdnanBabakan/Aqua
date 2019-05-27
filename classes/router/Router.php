@@ -173,13 +173,7 @@ class Router
         if ($page_found == 0) {
             self::run_map('404');
         }
-        $appended = self::$appends;
-        echo <<<HTML
-        
-        <!--AQUA_APPEND-->
-        {$appended}
-        <!--AQUA_APPEND-->
-HTML;
+        echo self::$appends;
     }
 
     /**
