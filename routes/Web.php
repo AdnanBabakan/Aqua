@@ -7,6 +7,6 @@ use \Aqua\SharkCallback as SharkCallback;
 // Home
 // Router::route('/', 'Index@HomeController');
 
-Router::route('/u/{name}', function($n) {
-    return 'Hello ' . $n;
+Router::route('/u/{?name}', function($name) {
+    return 'Hello ' . (isset($name)?$name:'None');
 });
