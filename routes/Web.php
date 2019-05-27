@@ -5,8 +5,11 @@ use \Aqua\Shark as Shark;
 use \Aqua\SharkCallback as SharkCallback;
 
 // Home
-// Router::route('/', 'Index@HomeController');
+Router::route('/', 'Index@HomeController');
 
-Router::route('/u/{?name}', function($name) {
-    return 'Hello ' . (isset($name)?$name:'None');
-});
+Router::route('/u/{name}/{date}', function($n, $d) {
+    return 'Hello ' . (isset($n)?$n:'None');
+})->name('user-profile')->rules([
+    "name" => "[A-Za-z]+",
+    "date" => "[0-9]+"
+]);
