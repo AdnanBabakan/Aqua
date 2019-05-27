@@ -12,4 +12,10 @@ Router::route('/u/{name}/{date}', function($n, $d) {
 })->rules([
     "name" => "[A-Za-z]+",
     "date" => "[0-9]+"
-]);
+])->name('user-profile');
+
+Router::route('/test', function() {
+    Router::use_ally('user-profile', ["date"=>"1379", "name"=>"adnan"]);
+});
+
+Router::route_to_ally('/t', 'user-profile', ["date"=>"1379", "name"=>"adnan"]);

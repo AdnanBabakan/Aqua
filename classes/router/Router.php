@@ -16,6 +16,7 @@ class Router
 
     public static function route(string $route, $function)
     {
+        $route[0] == '/' or $route = '/' . $route;
         self::$current_route_address = $route;
         $methods = "ALL";
         if (preg_match('/^\[(.*?)\]/', $route, $match)) {
@@ -49,14 +50,33 @@ class Router
                     $i++;
                 }
                 break;
+            case 'name':
+                self::$allies[$arguments[0]] = self::$current_route_address;
+                break;
             default:
                 try {
                     throw new AquaException(__('ROUTER_CHAIN_NOT_DEFINED', 'core', $name));
-                } catch(AquaException $e) {
+                } catch (AquaException $e) {
                     echo $e;
                 }
                 break;
         }
+    }
+
+    public static function use_ally(string $name, array $params = []) : void
+    {
+        $address = self::$allies[$name];
+        $address = preg_replace_callback('/{(.*?)}/', function($m) use ($params) {
+            return isset($params[$m[1]])?$params[$m[1]]:$m[0];
+        }, $address);
+        self::location($address);
+    }
+
+    public static function route_to_ally(string $route, string $name, array $params = []) : void
+    {
+        self::route($route, function() use ($name, $params) {
+            self::use_ally($name, $params);
+        });
     }
 
     public static function redirect(string $route, string $address, $code = 302): void
