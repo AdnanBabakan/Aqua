@@ -24,17 +24,21 @@ class Shark
     public function __construct()
     {
         $db = Core::config()->database;
-        $db_type = (isset($db->type)?$db->type:"mysql");
+        $db_type = (isset($db->type) ? $db->type : "mysql");
 
-        if(isset($db) and count((array)$db)) {
-            switch($db_type) {
+        if (isset($db) and count((array)$db)) {
+            switch ($db_type) {
                 case 'mysql':
                     try {
                         $this->db_conn = new \PDO("mysql:host={$db->address}:{$db->port};dbname={$db->name}", $db->username, $db->password);
                         $this->db_conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
                         self::$db_conn_static = $this->db_conn;
-                    } catch(\PDOException $e) {
-                        die('Database connection error!');
+                    } catch (\PDOException $e) {
+                        try {
+                            throw new AquaException(__('DB_CONNECTION_ERROR', 'core'));
+                        } catch (AquaException $e) {
+                            echo $e;
+                        }
                     }
                     break;
                 case 'sqlite':
@@ -42,14 +46,18 @@ class Shark
                         $this->db_conn = new \PDO("sqlite:" . __ROOT__ . '/' . $db->address);
                         $this->db_conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
                         self::$db_conn_static = $this->db_conn;
-                    } catch(\PDOException $e) {
-                        die('Database connection error!');
+                    } catch (\PDOException $e) {
+                        try {
+                            throw new AquaException(__('DB_CONNECTION_ERROR', 'core'));
+                        } catch (AquaException $e) {
+                            echo $e;
+                        }
                     }
                     break;
                 default:
                     try {
                         throw new AquaException(__('DB_TYPE_NOT_SUPPORTED', 'core', $db->type));
-                    } catch(AquaException $e) {
+                    } catch (AquaException $e) {
                         echo $e;
                     }
                     break;
@@ -76,7 +84,7 @@ class Shark
      * @param $query
      * @return object
      */
-    protected function prepare($query) : object
+    protected function prepare($query): object
     {
         return $this->db_conn->prepare($query);
     }
@@ -85,7 +93,7 @@ class Shark
      * @param $query
      * @param array $parameters
      */
-    protected function add_query($query, array $parameters = []) : void
+    protected function add_query($query, array $parameters = []): void
     {
         $query = preg_replace('/^(\s)+/', '', $query);
 
@@ -98,19 +106,20 @@ class Shark
     /**
      * @return object
      */
-    protected function run() : object
+    protected function run(): object
     {
         $table_name = explode('\\', get_called_class());
         return $this->table(end($table_name));
     }
 
-    protected function query_to_string($query, $params) {
+    protected function query_to_string($query, $params)
+    {
         $keys = array();
 
         # build a regular expression for each parameter
         foreach ($params as $key => $value) {
             if (is_string($key)) {
-                $keys[] = '/:'.$key.'/';
+                $keys[] = '/:' . $key . '/';
             } else {
                 $keys[] = '/[?]/';
             }
@@ -130,19 +139,19 @@ class Shark
     public function table(string $table)
     {
         self::$query_count += count($this->queries);
-        foreach($this->queries as $query) {
+        foreach ($this->queries as $query) {
             $sql = str_replace('{{table}}', $table, $query["query"]);
-            $sql = str_replace('{{where}}', preg_replace('/^(.*?)(AND|OR)/', ' WHERE ', implode('', (isset($this->where["queries"])?$this->where["queries"]:[]))), $sql);
+            $sql = str_replace('{{where}}', preg_replace('/^(.*?)(AND|OR)/', ' WHERE ', implode('', (isset($this->where["queries"]) ? $this->where["queries"] : []))), $sql);
 
             $result = $this->db_conn->prepare($sql);
-            $query_params = array_merge((isset($query["params"])?$query["params"]:[]), (isset($this->where['params'])?$this->where['params']:[]));
+            $query_params = array_merge((isset($query["params"]) ? $query["params"] : []), (isset($this->where['params']) ? $this->where['params'] : []));
             $result->execute($query_params);
             self::$raw_queries[] = $this->query_to_string($sql, $query_params);
         }
 
-        if($this->fetch == 1) {
+        if ($this->fetch == 1) {
             $result = $result->fetchAll(2);
-        } elseif($this->fetch == 2) {
+        } elseif ($this->fetch == 2) {
             $result = $result->fetch(2);
         }
 
@@ -150,10 +159,11 @@ class Shark
         $this->fetch = false;
         $this->where = [];
 
-        if(is_array($result)) {
+        if (is_array($result)) {
             return $result;
         } else {
-            return new class {
+            return new class
+            {
                 public function __call($name, $arguments)
                 {
                     return SharkChain::$name($arguments);
@@ -171,13 +181,13 @@ class Shark
      * @param $query
      * @return Shark
      */
-    public function query($query) : self
+    public function query($query): self
     {
         $this->add_query($query);
 
         $statement = array_values(array_filter(preg_split('/(\s)+/', $query)))[0];
 
-        if($statement=='SELECT') {
+        if ($statement == 'SELECT') {
             $this->fetch = 1;
         }
 
@@ -188,11 +198,11 @@ class Shark
      * @param array $parameters
      * @return Shark
      */
-    public function insert(array $parameters) : self
+    public function insert(array $parameters): self
     {
-        $sql = 'INSERT INTO {{table}} (' . implode(', ', array_keys($parameters)) . ') VALUES (' . implode(', ', array_map(function($d) {
-            return ":$d";
-        }, array_keys($parameters))) . ')';
+        $sql = 'INSERT INTO {{table}} (' . implode(', ', array_keys($parameters)) . ') VALUES (' . implode(', ', array_map(function ($d) {
+                return ":$d";
+            }, array_keys($parameters))) . ')';
 
         $this->add_query($sql, $parameters);
 
@@ -211,16 +221,16 @@ class Shark
     protected function where_do($operator, ...$parameters)
     {
         $clause_string = [];
-        if(!is_array($parameters[0])) {
+        if (!is_array($parameters[0])) {
             $clause = [$parameters];
         } else {
-            if(isset($parameters[0][0]) and is_array($parameters[0][0])) {
+            if (isset($parameters[0][0]) and is_array($parameters[0][0])) {
                 $clause = $parameters[0];
             } else {
                 $clause = $parameters;
             }
         }
-        
+
         if (count($clause[0]) > 1 and !is_int(array_keys($clause[0])[0])) {
             foreach ($clause[0] as $key => $value) {
                 $clause[] = [$key, $value];
@@ -228,13 +238,13 @@ class Shark
             unset($clause[0]);
         }
 
-        foreach ($clause as $value) {            
-            foreach($value as $sub_key => $sub_value) {
+        foreach ($clause as $value) {
+            foreach ($value as $sub_key => $sub_value) {
                 if (!is_int($sub_key)) {
                     $value = [$sub_key, $sub_value];
                 }
             }
-            if(count($value) == 2) {
+            if (count($value) == 2) {
                 $value[2] = $value[1];
                 $value[1] = '=';
             }
@@ -253,7 +263,7 @@ class Shark
      * @param mixed ...$parameters
      * @return Shark
      */
-    public function where(...$parameters) : self
+    public function where(...$parameters): self
     {
         $this->where_do('AND', ...$parameters);
 
@@ -264,7 +274,7 @@ class Shark
      * @param mixed ...$parameters
      * @return Shark
      */
-    public function and_where(...$parameters) : self
+    public function and_where(...$parameters): self
     {
         $this->where_do('AND', ...$parameters);
 
@@ -275,7 +285,7 @@ class Shark
      * @param mixed ...$parameters
      * @return Shark
      */
-    public function or_where(...$parameters) : self
+    public function or_where(...$parameters): self
     {
         $this->where_do('OR', ...$parameters);
 
@@ -288,11 +298,11 @@ class Shark
      * @param mixed ...$parameters
      * @return Shark
      */
-    public function select(...$parameters) : self
+    public function select(...$parameters): self
     {
         $this->fetch = 1;
 
-        if(isset($parameters[0]) and is_array($parameters[0])) {
+        if (isset($parameters[0]) and is_array($parameters[0])) {
             $parameters = $parameters[0];
         }
         $parameters or $parameters = ['*'];
@@ -306,7 +316,7 @@ class Shark
      * @param mixed ...$parameters
      * @return Shark
      */
-    public function first(...$parameters) : self
+    public function first(...$parameters): self
     {
         $this->select(...$parameters);
 
@@ -318,7 +328,7 @@ class Shark
     /**
      * @return Shark
      */
-    public function fetch() : self
+    public function fetch(): self
     {
         $this->fetch = 2;
 
