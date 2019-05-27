@@ -13,10 +13,6 @@ class Router
     protected static $routes = [];
     protected static $maps = [];
 
-    protected static $regex_shortcuts = [
-        "{(.*?)}" => "(.*?)+"
-    ];
-
     protected static $current_route;
 
     /**
@@ -37,11 +33,16 @@ class Router
         ];
     }
 
-    public static function redirect(string $route, string $address) : void
+    public static function redirect(string $route, string $address, $code = 302) : void
     {
-        self::route($route, function() use ($address) {
-            self::location($address);
+        self::route($route, function() use ($address, $code) {
+            self::location($address, $code);
         });
+    }
+
+    public static function permanent_redirect(string $route, string $address) : void
+    {
+        self::redirect($route, $address, 301);
     }
 
     /**
@@ -57,10 +58,17 @@ class Router
      * @param $string
      * @return string
      */
+
+    protected static $regex_shortcuts = [
+        "/{\?(.*?)}/" => "(([^\/]*?)*(\/)?)",
+        "/{(.*?)}/" => "(([^\/]*?)+(\/))"
+    ];
+
     protected static function regex_shortcuts($string): string
     {
+        $string = str_replace('/', '\/', $string);
         foreach (self::$regex_shortcuts as $k => $v) {
-            $string = preg_replace('/' . $k . '/', $v, $string);
+            $string = preg_replace($k, $v, $string);
         }
 
         return $string;
@@ -95,7 +103,7 @@ class Router
         }
 
         foreach ($params_position as $v) {
-            array_push($params, $path_explode[$v]);
+            array_push($params, isset($path_explode[$v])?$path_explode[$v]:Null);
         }
 
         return $params;
@@ -116,7 +124,7 @@ class Router
     {
         $page_found = 0;
         foreach (self::$routes as $route) {
-            if (preg_match('/^' . str_replace('/', '\/', self::regex_shortcuts($route['route'])) . '(\/)$/', (__PATH__ == '/' ? '//' : __PATH__))) {
+            if (preg_match('/^' . self::regex_shortcuts($route['route']) . '$/', (__PATH__ == '/' ? '//' : __PATH__))) {
                 $page_found++;
                 if ($route['methods'] == 'ALL' or in_array($_SERVER['REQUEST_METHOD'], $route['methods'])) {
                     self::$current_route = $route;
@@ -185,17 +193,18 @@ HTML;
                 }
             }
         } else {
-            echo 'Aqua 404 error!';
+            echo 'Aqua Error!';
         }
     }
 
-    public static function location(string $address) : void
+    public static function location(string $address, $code = 302) : void
     {
         if(preg_match('/^http(s)?:\/\//i', $address)) {
             $redirect_address = $address;
         } else {
             $redirect_address = Core::config()->general->www . ($address[0]!='/'?'/':'') . $address;
         }
+        http_response_code($code);
         header("Location: " . $redirect_address);
     }
 }

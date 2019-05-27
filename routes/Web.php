@@ -5,6 +5,8 @@ use \Aqua\Shark as Shark;
 use \Aqua\SharkCallback as SharkCallback;
 
 // Home
-Router::route('/', 'Index@HomeController');
+// Router::route('/', 'Index@HomeController');
 
-Router::route('/test', 'Test@HomeController');
+Router::route('/u/{name}', function($n) {
+    return 'Hello ' . $n;
+});

@@ -30,7 +30,7 @@ class Pearl
 
     public static function get_cache_id()
     {
-        return isset(self::$cache_id)?self::$cache_id:'NaN';
+        return isset(self::$cache_id)?self::$cache_id:Null;
     }
 
     /**

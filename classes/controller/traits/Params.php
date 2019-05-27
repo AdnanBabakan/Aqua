@@ -25,7 +25,7 @@ trait Params
         }
         $params = array_merge($params, $temp);
         if($name) {
-            return htmlspecialchars(isset($params[$name])?$params[$name]:'NaN');
+            return htmlspecialchars(isset($params[$name])?$params[$name]:Null);
         } else {
             return array_map('htmlspecialchars', $params);
         }
