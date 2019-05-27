@@ -37,6 +37,13 @@ class Router
         ];
     }
 
+    public static function redirect(string $route, string $address) : void
+    {
+        self::route($route, function() use ($address) {
+            self::location($address);
+        });
+    }
+
     /**
      * @param string $name
      * @param $function
@@ -180,5 +187,15 @@ HTML;
         } else {
             echo 'Aqua 404 error!';
         }
+    }
+
+    public static function location(string $address) : void
+    {
+        if(preg_match('/^http(s)?:\/\//i', $address)) {
+            $redirect_address = $address;
+        } else {
+            $redirect_address = Core::config()->general->www . ($address[0]!='/'?'/':'') . $address;
+        }
+        header("Location: " . $redirect_address);
     }
 }

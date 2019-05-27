@@ -8,5 +8,3 @@ use \Aqua\SharkCallback as SharkCallback;
 Router::route('/', 'Index@HomeController');
 
 Router::route('/test', 'Test@HomeController');
-
-Router::route('/aaaa', 'Test@HomeController');
