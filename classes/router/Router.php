@@ -12,6 +12,7 @@ class Router
     protected static $maps = [];
     protected static $current_route;
     protected static $current_route_address;
+    protected static $allies = [];
 
     public static function route(string $route, $function)
     {
@@ -38,12 +39,23 @@ class Router
 
     public static function add_route_option($name, ...$arguments)
     {
-        $i = 0;
-        foreach (self::$routes as $route) {
-            if ($route['route'] == self::$current_route_address) {
-                self::$routes[$i][$name] = count($arguments) == 1 ? $arguments[0] : $arguments;
-            }
-            $i++;
+        switch ($name) {
+            case 'rules':
+                $i = 0;
+                foreach (self::$routes as $route) {
+                    if ($route['route'] == self::$current_route_address) {
+                        self::$routes[$i][$name] = count($arguments) == 1 ? $arguments[0] : $arguments;
+                    }
+                    $i++;
+                }
+                break;
+            default:
+                try {
+                    throw new AquaException(__('ROUTER_CHAIN_NOT_DEFINED', 'core', $name));
+                } catch(AquaException $e) {
+                    echo $e;
+                }
+                break;
         }
     }
 
@@ -141,7 +153,7 @@ class Router
                 self::$current_route = $route;
                 $params = self::extract_url_params();
                 $all_params_matches_rules = true;
-                if(isset(self::$current_route['rules'])) {
+                if (isset(self::$current_route['rules'])) {
                     foreach (self::$current_route['rules'] as $k => $v) {
                         preg_match('/^' . $v . '$/', $params[$k]) or $all_params_matches_rules = false;
                     }

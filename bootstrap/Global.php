@@ -1,10 +1,10 @@
 <?php
 
 //I18N
-function __(string $string, string $folder = '')
+function __(string $key, string $folder = '', ...$params)
 {
     $i18n = new \Aqua\I18N;
-    return $i18n->translate($string, $folder);
+    return $i18n->translate($key, $folder, ...$params);
 }
 
 // Shark

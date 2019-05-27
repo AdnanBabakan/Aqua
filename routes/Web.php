@@ -9,7 +9,7 @@ Router::route('/', 'Index@HomeController');
 
 Router::route('/u/{name}/{date}', function($n, $d) {
     return 'Hello ' . (isset($n)?$n:'None');
-})->name('user-profile')->rules([
+})->rules([
     "name" => "[A-Za-z]+",
     "date" => "[0-9]+"
 ]);

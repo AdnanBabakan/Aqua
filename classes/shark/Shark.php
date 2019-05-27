@@ -48,7 +48,7 @@ class Shark
                     break;
                 default:
                     try {
-                        throw new AquaException(__('\'' . $db->type . '\' is not a supported database type.', 'core'), -1);
+                        throw new AquaException(__('DB_TYPE_NOT_SUPPORTED', 'core', $db->type));
                     } catch(AquaException $e) {
                         echo $e;
                     }

@@ -99,7 +99,7 @@ class Authenticator
             return $count>0?true:false;
         } else {
             try {
-                throw new AquaException(__('No config provided for authenticator.', 'core'), -1);
+                throw new AquaException(__('AUTH_NO_CONFIG', 'core'));
             } catch(AquaException $e) {
                 echo $e;
             }
@@ -140,7 +140,7 @@ class Authenticator
     public function auth_login_needed()
     {
         if(!$this->auth_is_logged_in()) {
-            HTTP::redirect($this->login_page);
+            Router::location($this->login_page);
         }
     }
 }

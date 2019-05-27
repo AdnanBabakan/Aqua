@@ -25,7 +25,7 @@ require_once __ROOT__ . '/classes/core/Misc.php';
 
 require_once __ROOT__ . '/classes/i18n/I18N.php';
 
-require_once __ROOT__ . '/classes/exceptions/AquaException.php';
+require_once __ROOT__ . '/classes/exception/AquaException.php';
 
 require_once __ROOT__ . '/classes/shark/Shark.php';
 
