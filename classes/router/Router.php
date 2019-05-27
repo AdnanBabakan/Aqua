@@ -137,12 +137,14 @@ class Router
     {
         $page_found = 0;
         foreach (self::$routes as $route) {
-            if (preg_match('/^' . self::regex_shortcuts($route['route']) . '(\/)$/', (__PATH__ == '/' ? '//' : __PATH__))) {
+            if (preg_match('/^' . self::regex_shortcuts($route['route']) . '(\/)$/', __PATH__)) {
                 self::$current_route = $route;
                 $params = self::extract_url_params();
                 $all_params_matches_rules = true;
-                foreach (self::$current_route['rules'] as $k => $v) {
-                    preg_match('/^' . $v . '$/', $params[$k]) or $all_params_matches_rules = false;
+                if(isset(self::$current_route['rules'])) {
+                    foreach (self::$current_route['rules'] as $k => $v) {
+                        preg_match('/^' . $v . '$/', $params[$k]) or $all_params_matches_rules = false;
+                    }
                 }
                 if (($route['methods'] == 'ALL' or in_array($_SERVER['REQUEST_METHOD'], $route['methods'])) and $all_params_matches_rules) {
                     $page_found++;
