@@ -15,7 +15,7 @@ class Pearl
     /**
      * @param array ...$parameters
      */
-    public static function add_default_parameter(array ...$parameters) : void
+    public static function add_default_parameter(array ...$parameters): void
     {
         self::$default_parameters = array_merge(self::$default_parameters, ...$parameters);
     }
@@ -23,28 +23,49 @@ class Pearl
     /**
      * @return array
      */
-    public static function get_default_parameters() : array
+    public static function get_default_parameters(): array
     {
         return self::$default_parameters;
     }
 
     public static function get_cache_id()
     {
-        return isset(self::$cache_id)?self::$cache_id:Null;
+        return isset(self::$cache_id) ? self::$cache_id : Null;
     }
 
     /**
      * @param string|null $string
      * @return string
      */
-    public static function render_layout(?string $string) : string
+
+    public static function helpers(string $string): string
+    {
+        $string = preg_replace_callback('/\[@(.*?)\]/', function ($m) {
+            switch ($m[1]) {
+                case 'csrf':
+                    $result = CSRF::csrf_token_input();
+                    break;
+                default:
+                    try {
+                        throw new AquaException(__('PEARL_HELPER_NOT_DEFINED', 'core', $m[1]));
+                    } catch (AquaException $e) {
+                        echo $e;
+                    }
+                    break;
+            }
+            return $result;
+        }, $string);
+        return $string;
+    }
+
+    public static function render_layout(string $string): string
     {
         $raw_content = preg_replace('/\[@layout (.*?)\]/', '', $string);
-        if(preg_match_all('/\[@(.*?)\]/', $string, $match)) {
-            for($i=0; $i<count($match[0]); $i++) {
+        if (preg_match_all('/\[@(.*?)\]/', $string, $match)) {
+            for ($i = 0; $i < count($match[0]); $i++) {
                 $full_command = $match[0][$i];
                 $command_array = explode(' ', $match[1][$i]);
-                switch($command_array[0]) {
+                switch ($command_array[0]) {
                     case 'layout':
                         ob_start();
                         require_once __ROOT__ . '/views/' . $command_array[1] . '.php';
@@ -57,9 +78,10 @@ class Pearl
                         $component = ob_get_clean();
                         $string = self::render_layout(str_replace($full_command, $component, $string));
                         break;
-                    }
                 }
             }
+        }
+        $string = self::helpers($string);
         return $string;
     }
 
@@ -69,25 +91,25 @@ class Pearl
      * @param bool $is_string
      * @return string
      */
-    public static function render(string $template, array $parameters = [], bool $is_string = false) : string
+    public static function render(string $template, array $parameters = [], bool $is_string = false): string
     {
         $parameters = array_merge($parameters, self::$default_parameters);
 
         $cached = false;
 
-        if(Core::config()->general->cache) {
+        if (Core::config()->general->cache) {
             $cache = new Cache($template, $parameters);
             self::$cache_id = $cache->get_cache_id();
-            if($cache->cache_exists()) {
+            if ($cache->cache_exists()) {
                 $cached = true;
                 $file = $cache->get_cache();
             }
         }
 
-        if(!$cached) {
+        if (!$cached) {
             extract($parameters);
 
-            if($is_string) {
+            if ($is_string) {
                 $file = $template;
             } else {
                 ob_start();
@@ -98,21 +120,21 @@ class Pearl
 
             $file = self::render_layout($file);
 
-            if(preg_match_all('/\[\[(.*?)\]\]/', $file, $match)) {
-                for($i=0; $i<count($match[0]); $i++) {
-                    if(isset($match[1][$i]) && array_key_exists($match[1][$i], $parameters)) {
+            if (preg_match_all('/\[\[(.*?)\]\]/', $file, $match)) {
+                for ($i = 0; $i < count($match[0]); $i++) {
+                    if (isset($match[1][$i]) && array_key_exists($match[1][$i], $parameters)) {
                         $file = str_replace($match[0][$i], $parameters[$match[1][$i]], $file);
                     }
                 }
             }
 
-            if(isset($layout)) {
+            if (isset($layout)) {
                 $file = str_replace('[@yield]', $file, $layout);
             }
 
             $file = preg_replace('/\[@(.*?)\]/', '', $file);
 
-            if(Core::config()->general->cache) {
+            if (Core::config()->general->cache) {
                 $cache = new Cache($template, $parameters);
                 self::$cache_id = $cache->get_cache_id();
                 $cache->save_cache($file);

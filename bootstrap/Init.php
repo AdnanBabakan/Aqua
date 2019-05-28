@@ -31,6 +31,11 @@ require_once __ROOT__ . '/classes/shark/Shark.php';
 
 require_once __ROOT__ . '/classes/authenticator/Authenticator.php';
 
+require_once __ROOT__ . '/classes/csrf/CSRF.php';
+
+// Initiate CSRF protection
+$CSRF = new \Aqua\CSRF;
+
 require_once __ROOT__ . '/classes/pearl/Pearl.php';
 
 require_once __ROOT__ . '/classes/cache/Cache.php';

@@ -19,3 +19,7 @@ Router::route('/test', function() {
 });
 
 Router::route_to_ally('/t', 'user-profile', ["date"=>"1379", "name"=>"adnan"]);
+
+Router::route('/csrf_key', function() {
+    return \Aqua\CSRF::csrf_token_input();
+});
