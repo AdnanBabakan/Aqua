@@ -2,12 +2,17 @@
 /**
  * @namespace: Aqua
  * @version 0.1
- * This file is the main class that handles routes across the appliaction
+ * This file is the main class that handles routes across the application
  */
 
 namespace Aqua;
+
+require_once 'RouterMiddleware.php';
+
 class Router
 {
+    use RouterMiddleware;
+
     protected static $routes = [];
     protected static $maps = [];
     protected static $current_route;
@@ -167,6 +172,9 @@ class Router
 
     public static function run(): void
     {
+        // Run Global Middleware
+        self::$global_middleware->handle();
+
         $page_found = 0;
         foreach (self::$routes as $route) {
             if (preg_match('/^' . self::regex_shortcuts($route['route']) . '(\/)$/', __PATH__)) {

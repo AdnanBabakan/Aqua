@@ -4,5 +4,6 @@ return [
     "DB_TYPE_NOT_SUPPORTED" => "'%0' is not a supported database type.",
     "AUTH_NO_CONFIG" => "No config provided for authentication.",
     "DB_CONNECTION_ERROR" => "Error connecting to database.",
-    "PEARL_HELPER_NOT_DEFINED" => "'%0' helper is not valid."
+    "PEARL_HELPER_NOT_DEFINED" => "'%0' helper is not valid.",
+    "MIDDLEWARE_INTERFACE_ERROR" => "'%0' middleware doesn't implement \Aqua\MiddlewareInterface."
 ];

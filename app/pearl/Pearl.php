@@ -42,6 +42,9 @@ class Pearl
     {
         $string = preg_replace_callback('/\[@(.*?)\]/', function ($m) {
             switch ($m[1]) {
+                case 'csrf-token':
+                    $result = CSRF::csrf_token();
+                    break;
                 case 'csrf':
                     $result = CSRF::csrf_token_input();
                     break;

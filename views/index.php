@@ -1,5 +1,5 @@
-[@layout layouts/general]
+[@layout layouts/General]
 
 <form>
-    [@csrf]
+
 </form>

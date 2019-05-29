@@ -22,7 +22,12 @@ class CSRF
         }
     }
 
-    public static function csrf_token_input()
+    public static function csrf_token() : string
+    {
+        return $_SESSION['csrf_token'];
+    }
+
+    public static function csrf_token_input() : string
     {
         return '<input type="hidden" name="csrf_token" id="csrf_token" value="' . $_SESSION['csrf_token'] . '" />';
     }
