@@ -12,4 +12,6 @@ interface MiddlewareInterface
     public function handle();
 
     public function methods(): array;
+
+    public function on_error();
 }

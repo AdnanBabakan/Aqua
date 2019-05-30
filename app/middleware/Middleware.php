@@ -7,6 +7,7 @@
 
 namespace Aqua;
 
-class Middleware
+class Middleware extends Controller
 {
+
 }

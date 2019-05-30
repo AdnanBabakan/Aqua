@@ -8,4 +8,5 @@
 \Aqua\Pearl::add_default_parameter(["app_title"=>"Aqua"]);
 
 // Register Global Middleware
+\Aqua\Router::register_global_middleware('Aqua\CSRFMiddleware');
 \Aqua\Router::register_global_middleware('Aqua\MainMiddleware');

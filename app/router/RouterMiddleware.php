@@ -4,7 +4,7 @@ namespace Aqua;
 
 trait RouterMiddleware
 {
-    public static $global_middleware;
+    public static $global_middleware = [];
 
     public static function register_global_middleware($name)
     {
@@ -19,7 +19,7 @@ trait RouterMiddleware
                 echo $e;
             }
         } else {
-            self::$global_middleware = new $name;
+            self::$global_middleware[] = new $name;
         }
     }
 }

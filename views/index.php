@@ -1,5 +1,5 @@
 [@layout layouts/General]
 
-<form>
-
+<form action="/test_csrf" method="POST">
+    <input type="text" name="username" />
 </form>

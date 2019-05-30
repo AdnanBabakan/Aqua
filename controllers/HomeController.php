@@ -16,4 +16,9 @@ class HomeController extends Controller
     {
         return $this->get_name_a;
     }
+
+    public function TestCSRF()
+    {
+        echo $this->POST('username');
+    }
 }

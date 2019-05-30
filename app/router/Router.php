@@ -28,7 +28,7 @@ class Router
             $methods = explode('|', $match[1]);
         }
         self::$routes[] = [
-            "route" => preg_replace('/^\[(.*?)\]/', '', $route),
+            "route" => preg_replace('/^\/\[(.*?)\]/', '', $route),
             "function" => $function,
             "methods" => $methods
         ];
@@ -68,18 +68,18 @@ class Router
         }
     }
 
-    public static function use_ally(string $name, array $params = []) : void
+    public static function use_ally(string $name, array $params = []): void
     {
         $address = self::$allies[$name];
-        $address = preg_replace_callback('/{(.*?)}/', function($m) use ($params) {
-            return isset($params[$m[1]])?$params[$m[1]]:$m[0];
+        $address = preg_replace_callback('/{(.*?)}/', function ($m) use ($params) {
+            return isset($params[$m[1]]) ? $params[$m[1]] : $m[0];
         }, $address);
         self::location($address);
     }
 
-    public static function route_to_ally(string $route, string $name, array $params = []) : void
+    public static function route_to_ally(string $route, string $name, array $params = []): void
     {
-        self::route($route, function() use ($name, $params) {
+        self::route($route, function () use ($name, $params) {
             self::use_ally($name, $params);
         });
     }
@@ -173,45 +173,57 @@ class Router
     public static function run(): void
     {
         // Run Global Middleware
-        self::$global_middleware->handle();
+        $previous_global_middleware_status = true;
+        foreach (self::$global_middleware as $global_middleware) {
+            if (in_array($_SERVER['REQUEST_METHOD'], $global_middleware->methods()) and $previous_global_middleware_status) {
+                $last_global_middle_ware = $global_middleware;
+                $previous_global_middleware_status = $global_middleware->handle();
+            } else {
+                break;
+            }
+        }
 
-        $page_found = 0;
-        foreach (self::$routes as $route) {
-            if (preg_match('/^' . self::regex_shortcuts($route['route']) . '(\/)$/', __PATH__)) {
-                self::$current_route = $route;
-                $params = self::extract_url_params();
-                $all_params_matches_rules = true;
-                if (isset(self::$current_route['rules'])) {
-                    foreach (self::$current_route['rules'] as $k => $v) {
-                        preg_match('/^' . $v . '$/', $params[$k]) or $all_params_matches_rules = false;
+        if ($previous_global_middleware_status) {
+            $page_found = 0;
+            foreach (self::$routes as $route) {
+                if (preg_match('/^' . self::regex_shortcuts($route['route']) . '(\/)$/', __PATH__)) {
+                    self::$current_route = $route;
+                    $params = self::extract_url_params();
+                    $all_params_matches_rules = true;
+                    if (isset(self::$current_route['rules'])) {
+                        foreach (self::$current_route['rules'] as $k => $v) {
+                            preg_match('/^' . $v . '$/', $params[$k]) or $all_params_matches_rules = false;
+                        }
                     }
-                }
-                if (($route['methods'] == 'ALL' or in_array($_SERVER['REQUEST_METHOD'], $route['methods'])) and $all_params_matches_rules) {
-                    $page_found++;
-                    if (gettype($route['function']) == 'object') {
-                        echo $route['function'](...array_values($params));
-                    } elseif (gettype($route['function']) == 'string') {
-                        $f = explode('@', $route['function']);
-                        require_once __ROOT__ . '/controllers/' . $f[1] . '.php';
-                        $class = '\\' . $f[1] . '\\' . $f[1];
-                        $instance = new $class;
-                        $return_value = $instance->{$f[0]}(...$params);
-                        switch (gettype($return_value)) {
-                            case 'array':
-                            case 'object':
-                                header('Content-Type: application/json;');
-                                echo json_encode($return_value);
-                                break;
-                            default:
-                                header('Content-Type: ' . $instance->content_type . ';');
-                                echo $return_value;
+                    if (($route['methods'] == 'ALL' or in_array($_SERVER['REQUEST_METHOD'], $route['methods'])) and $all_params_matches_rules) {
+                        $page_found++;
+                        if (gettype($route['function']) == 'object') {
+                            echo $route['function'](...array_values($params));
+                        } elseif (gettype($route['function']) == 'string') {
+                            $f = explode('@', $route['function']);
+                            require_once __ROOT__ . '/controllers/' . $f[1] . '.php';
+                            $class = '\\' . $f[1] . '\\' . $f[1];
+                            $instance = new $class;
+                            $return_value = $instance->{$f[0]}(...$params);
+                            switch (gettype($return_value)) {
+                                case 'array':
+                                case 'object':
+                                    header('Content-Type: application/json;');
+                                    echo json_encode($return_value);
+                                    break;
+                                default:
+                                    header('Content-Type: ' . $instance->content_type . ';');
+                                    echo $return_value;
+                            }
                         }
                     }
                 }
             }
-        }
-        if ($page_found == 0) {
-            self::run_map('404');
+            if ($page_found == 0) {
+                self::run_map('404');
+            }
+        } else {
+            $last_global_middle_ware->on_error();
         }
         echo self::$appends;
     }
