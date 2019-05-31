@@ -23,10 +23,8 @@ class CSRFMiddleware extends Middleware implements MiddlewareInterface
         echo 'CSRF not authorized!';
     }
 
-    public function exceptions(): array
+    public function sequence(): string
     {
-        return [
-            "http://google.com/"
-        ];
+        return 'before';
     }
 }

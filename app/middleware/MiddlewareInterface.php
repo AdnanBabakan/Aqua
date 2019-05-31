@@ -14,4 +14,6 @@ interface MiddlewareInterface
     public function methods(): array;
 
     public function on_error();
+
+    public function sequence(): string;
 }

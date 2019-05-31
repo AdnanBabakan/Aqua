@@ -7,7 +7,7 @@
 
 namespace Aqua;
 
-require_once 'RouterMiddleware.php';
+require_once 'traits/RouterMiddleware.php';
 
 class Router
 {
@@ -173,19 +173,17 @@ class Router
     public static function run(): void
     {
         // Run Global Middleware
-        $previous_global_middleware_status = true;
-        foreach (self::$global_middleware as $global_middleware) {
+        $previous_before_global_middleware_status = true;
+        foreach (self::$global_middleware_before as $global_middleware) {
             if (in_array($_SERVER['REQUEST_METHOD'], $global_middleware->methods())
-                and $previous_global_middleware_status
-                and !in_array(isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '', method_exists($global_middleware, 'exceptions')?$global_middleware->exceptions():[])) {
+                and $previous_before_global_middleware_status
+                and !in_array(isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '', method_exists($global_middleware, 'exceptions') ? $global_middleware->exceptions() : [])) {
                 $last_global_middle_ware = $global_middleware;
-                $previous_global_middleware_status = $global_middleware->handle();
-            } else {
-                break;
+                $previous_before_global_middleware_status = $global_middleware->handle();
             }
         }
 
-        if ($previous_global_middleware_status) {
+        if ($previous_before_global_middleware_status) {
             $page_found = 0;
             foreach (self::$routes as $route) {
                 if (preg_match('/^' . self::regex_shortcuts($route['route']) . '(\/)$/', __PATH__)) {
@@ -227,6 +225,17 @@ class Router
         } else {
             $last_global_middle_ware->on_error();
         }
+
+        // Run Global Middleware With 'after' sequence
+        $previous_after_global_middleware_status = true;
+        foreach (self::$global_middleware_after as $global_middleware) {
+            if (in_array($_SERVER['REQUEST_METHOD'], $global_middleware->methods())
+                and $previous_after_global_middleware_status
+                and !in_array(isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '', method_exists($global_middleware, 'exceptions') ? $global_middleware->exceptions() : [])) {
+                $previous_after_global_middleware_status = $global_middleware->handle();
+            }
+        }
+
         echo self::$appends;
     }
 

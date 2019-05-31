@@ -19,4 +19,9 @@ class MainMiddleware extends Middleware implements MiddlewareInterface
     {
         // TODO: Implement on_error() method.
     }
+
+    public function sequence(): string
+    {
+        return 'after';
+    }
 }
