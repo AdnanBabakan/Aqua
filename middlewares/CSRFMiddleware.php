@@ -6,7 +6,7 @@ class CSRFMiddleware extends Middleware implements MiddlewareInterface
 {
     public function handle()
     {
-        if($this->POST('csrf_token')==$_SESSION['csrf_token']) {
+        if ($this->POST('csrf_token') == $_SESSION['csrf_token'] or (isset(Core::config()->general->mode)?Core::config()->general->mode:'')=="development") {
             return true;
         } else {
             return false;
@@ -21,5 +21,12 @@ class CSRFMiddleware extends Middleware implements MiddlewareInterface
     public function on_error()
     {
         echo 'CSRF not authorized!';
+    }
+
+    public function exceptions(): array
+    {
+        return [
+            "http://google.com/"
+        ];
     }
 }

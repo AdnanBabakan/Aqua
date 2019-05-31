@@ -1,6 +1,6 @@
 <?php
 
-//I18N
+// I18N
 function __(string $key, string $folder = '', ...$params)
 {
     $i18n = new \Aqua\I18N;

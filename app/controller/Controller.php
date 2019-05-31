@@ -8,11 +8,13 @@
 namespace Aqua;
 
 require_once 'traits/Params.php';
+require_once 'traits/Headers.php';
 
 class Controller extends Authenticator
 {
 
     use Params;
+    use Headers;
 
     public $content_type = 'text/html';
 

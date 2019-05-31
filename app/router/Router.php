@@ -175,7 +175,9 @@ class Router
         // Run Global Middleware
         $previous_global_middleware_status = true;
         foreach (self::$global_middleware as $global_middleware) {
-            if (in_array($_SERVER['REQUEST_METHOD'], $global_middleware->methods()) and $previous_global_middleware_status) {
+            if (in_array($_SERVER['REQUEST_METHOD'], $global_middleware->methods())
+                and $previous_global_middleware_status
+                and !in_array(isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '', method_exists($global_middleware, 'exceptions')?$global_middleware->exceptions():[])) {
                 $last_global_middle_ware = $global_middleware;
                 $previous_global_middleware_status = $global_middleware->handle();
             } else {
